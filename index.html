@@ -1,25 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>People Management</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet">
+  <script src="./js/function.js" defer></script>
 </head>
+
 <body>
   <aside id="sidebar">
-    <img src="" alt="">
+    <img id="company-logo" src="../assets/companyLogo.svg" alt="company logo">
     <ul id="nav-buttons">
-      <li>Projects</li>
+      <li>
+        <span class="material-symbols-outlined">apartment</span>
+        Projects
+      </li>
+      <li>
+        <span class="material-symbols-outlined">task</span>
+        Tasks
+      </li>
+      <li class="active">
+        <span class="material-symbols-outlined">people</span>
+        People
+      </li>
+      <li>
+        <span class="material-symbols-outlined">calendar_month</span>
+        Calendar
+      </li>
+      <li>
+        <span class="material-symbols-outlined">settings</span>
+        Settings
+      </li>
+      <li>
+        <span class="material-symbols-outlined">logout</span>
+        Logout
+      </li>
     </ul>
   </aside>
+
   <main id="content">
+    <dialog id="new-person-modal">
+      <form id="person-form">
+        <h2>Add New Person</h2>
+        <div class="input-list">
+          <div class="form-row">
+            <div class="form-field-container">
+              <label for="person-name">First Name</label>
+              <input type="text" id="person-name" name="person-name" placeholder="John" required>
+            </div>
+            <div class="form-field-container">
+              <label for="person-surname">Last Name</label>
+              <input type="text" id="person-surname" name="person-surname" placeholder="Smith" required>
+            </div>
+          </div>
+          <div class="form-field-container">
+            <label for="person-email">Email</label>
+            <input type="email" id="person-email" name="person-email" placeholder="john.smith@company.com" required>
+          </div>
+          <div class="form-row">
+            <div class="form-field-container">
+              <label for="person-role">Role</label>
+              <select id="person-role" name="person-role" required>
+                <option value="">Select role</option>
+                <option value="architect">Architect</option>
+                <option value="engineer">Engineer</option>
+                <option value="designer">Designer</option>
+                <option value="project-manager">Project Manager</option>
+                <option value="developer">Developer</option>
+                <option value="analyst">Analyst</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label for="person-department">Department</label>
+              <select id="person-department" name="person-department" required>
+                <option value="">Select department</option>
+                <option value="architecture">Architecture</option>
+                <option value="engineering">Engineering</option>
+                <option value="development">Development</option>
+                <option value="project-management">Project Management</option>
+                <option value="administration">Administration</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field-container">
+              <label for="person-phone">Phone</label>
+              <input type="tel" id="person-phone" name="person-phone" placeholder="+1 123 456 7890">
+            </div>
+            <div class="form-field-container">
+              <label for="hire-date">Hire Date</label>
+              <input type="date" id="hire-date" name="hire-date" required>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Add Person</button>
+        </div>
+      </form>
+    </dialog>
+
     <header>
-      <h1>Projects</h1>
+      <div>
+        <h1>People Management</h1>
+        <p class="page-subtitle">View and manage the company team</p>
+      </div>
+      <div class="header-actions">
+        <div class="search-container">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="search-input" placeholder="Search by name, email or role...">
+        </div>
+        <button id="add-person-btn" class="btn-primary">
+          <span class="material-symbols-outlined">add</span>
+          Add Person
+        </button>
+      </div>
     </header>
-    <div id="projects-list">
-      <div></div>
+
+    <div class="people-container">
+      <div class="people-stats">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">people</span>
+          </div>
+          <div class="stat-content">
+            <h3 id="total-people">0</h3>
+            <p>Total People</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">business_center</span>
+          </div>
+          <div class="stat-content">
+            <h3 id="total-departments">0</h3>
+            <p>Active Departments</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">trending_up</span>
+          </div>
+          <div class="stat-content">
+            <h3 id="new-hires">0</h3>
+            <p>New Hires (30 days)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="people-list-container">
+        <div class="list-header">
+          <h2>People List</h2>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="architect">Architects</button>
+            <button class="filter-tab" data-filter="engineer">Engineers</button>
+            <button class="filter-tab" data-filter="project-manager">PM</button>
+            <button class="filter-tab" data-filter="developer">Developers</button>
+          </div>
+        </div>
+
+        <div class="people-table">
+          <div class="table-header">
+            <div class="header-cell">Name</div>
+            <div class="header-cell">Email</div>
+            <div class="header-cell">Role</div>
+            <div class="header-cell">Department</div>
+            <div class="header-cell">Hire Date</div>
+            <div class="header-cell">Actions</div>
+          </div>
+          <div id="people-list" class="table-body">
+            <!-- People will be inserted here dynamically -->
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </body>
+
 </html>
