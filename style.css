@@ -68,6 +68,13 @@ button {
   border: none;
 }
 
+small {
+  color: #969696;
+  font-size: var(--font-xs);
+  margin-top: 4px;
+  display: block;
+}
+
 /* Sidebar */
 #sidebar {
   background-color: var(--background-100);
@@ -164,7 +171,91 @@ header h1 {
 
 #projects-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  padding: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  padding: 20px 40px;
+}
+
+/* Form Styles */
+form {
+  width: 450px;
+  border-radius: 10px;
+  background-color: var(--background-100);
+  color: white;
+}
+
+form h2 {
+  padding: 20px;
+  border-bottom: 2px solid var(--background-200);
+}
+
+form .input-list {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  row-gap: 25px;
+}
+
+form .form-field-container {
+  display: flex;
+  flex-direction: column;
+}
+
+dialog {
+  background-color: transparent;
+  border: none;
+  margin: auto;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+input, textarea, select {
+  color: white;
+  background-color: var(--background-200);
+  padding: 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: var(--font-base);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 20px;
+}
+
+.btn-primary {
+  background-color: #2ecc40;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: var(--font-base);
+}
+
+.btn-secondary {
+  background-color: var(--background-200);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: var(--font-base);
+}
+
+.btn-primary:hover {
+  background-color: #29b739;
+}
+
+.btn-secondary:hover {
+  background-color: var(--background-100);
 }

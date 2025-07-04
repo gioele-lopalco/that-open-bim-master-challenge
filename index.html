@@ -40,6 +40,46 @@
     </ul>
   </aside>
   <main id="content">
+    <dialog id="new-project-modal">
+      <form>
+        <h2>New Project</h2>
+        <div class="input-list">
+          <div class="form-field-container">
+            <label for="project-name">Project Name</label>
+            <input type="text" id="project-name" name="project-name" placeholder="Riverfront Promenade">
+            <small>TIP: Give it a short name.</small>
+          </div>
+          <div class="form-field-container">
+            <label for="project-description">Project Description</label>
+            <textarea id="project-description" name="project-description" rows="5" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+          </div>
+          <div class="form-field-container">
+            <label for="role">Role</label>
+            <select id="role" name="role">
+              <option value="architect">Architect</option>
+              <option value="engineer">Engineer</option>
+              <option value="developer">Developer</option>
+            </select>
+          </div>
+          <div class="form-field-container">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="pending">Pending</option>
+              <option value="active">Active</option>
+              <option value="finished">Finished</option>
+            </select>
+          </div>
+          <div class="form-field-container">
+            <label for="finish-date">Finish Date</label>
+            <input type="date" id="finish-date" name="finish-date">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Accept</button>
+        </div>
+      </form>
+    </dialog>
     <header>
       <h1>Projects</h1>
       <div>
@@ -140,8 +180,102 @@
           </div>
         </div>
       </div>
+      <div class="project-card">
+        <div class="card-header">
+          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
+          <div>
+            <h5>Project 1</h5>
+            <p>Project description</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="card-header">
+          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
+          <div>
+            <h5>Project 1</h5>
+            <p>Project description</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="card-header">
+          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
+          <div>
+            <h5>Project 1</h5>
+            <p>Project description</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+          <div class="card-properties">
+            <p style="color: #969696;">Status</p>
+            <p>In Progress</p>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
+  <script src="./js/modal.js"></script>
 </body>
 
 </html>
