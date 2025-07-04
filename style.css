@@ -212,7 +212,9 @@ dialog::backdrop {
   backdrop-filter: blur(3px);
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   color: white;
   background-color: var(--background-200);
   padding: 15px;
@@ -221,7 +223,9 @@ input, textarea, select {
   font-size: var(--font-base);
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: 2px solid var(--primary);
 }
 
@@ -258,4 +262,238 @@ input:focus, textarea:focus, select:focus {
 
 .btn-secondary:hover {
   background-color: var(--background-100);
+}
+
+#project-details>.main-page-content {
+  display: grid;
+  padding: 20px 40px;
+  gap: 20px;
+  grid-template-columns: 475px 1fr;
+  height: 100%;
+}
+
+.dashboard-card {
+  background-color: var(--background-100);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card + .dashboard-card {
+  margin-top: 20px;
+}
+
+.project-info-card {
+  background-color: var(--background);
+  padding: 20px;
+  gap: 16px;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.project-avatar {
+  background-color: #ca8134;
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xl);
+  font-weight: 500;
+}
+
+.project-info {
+  margin-bottom: 16px;
+}
+
+.project-info h3 {
+  font-size: var(--font-2xl);
+  margin-bottom: 4px;
+  color: white;
+}
+
+.project-info p {
+  color: #969696;
+  font-size: var(--font-base);
+}
+
+.project-details {
+  margin-bottom: 16px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-item .label {
+  color: #969696;
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+}
+
+.detail-item .value {
+  color: white;
+  font-size: var(--font-base);
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-bar {
+  flex: 1;
+  background-color: var(--background-200);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress {
+  background-color: #2ecc40;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.progress-text {
+  color: white;
+  font-size: var(--font-base);
+  font-weight: 500;
+}
+
+.dashboard-card h3 {
+  color: white;
+  font-size: var(--font-xl);
+  margin-bottom: 16px;
+  padding: 24px;
+}
+
+.todo-card {
+  padding: 0;
+  background-color: var(--background);
+  flex-grow: 1;
+}
+
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--background-200);
+}
+
+.todo-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.search-container {
+  background-color: #2c2c2e;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-container input {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 100%;
+  color: white;
+  font-size: var(--font-base);
+}
+
+.search-container input:focus {
+  outline: none;
+}
+
+.search-container .material-symbols-outlined {
+  color: #969696;
+  font-size: 20px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2c2c2e;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-icon:hover {
+  background-color: #3a3a3c;
+}
+
+.btn-icon .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.todo-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.todo-item {
+  background-color: #2c2c2e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.todo-item:hover {
+  background-color: #3a3a3c;
+}
+
+.todo-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.todo-content p {
+  color: #fff;
+  font-size: var(--font-base);
+  line-height: 1.4;
+}
+
+.todo-content .material-symbols-outlined {
+  color: #969696;
+  font-size: 18px;
+}
+
+.todo-date {
+  color: #969696;
+  font-size: var(--font-sm);
+  white-space: nowrap;
 }

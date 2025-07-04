@@ -11,6 +11,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
     rel="stylesheet">
+  <script src="./js/modal.js"></script>
 </head>
 
 <body>
@@ -40,242 +41,162 @@
     </ul>
   </aside>
   <main id="content">
-    <dialog id="new-project-modal">
-      <form>
-        <h2>New Project</h2>
-        <div class="input-list">
-          <div class="form-field-container">
-            <label for="project-name">Project Name</label>
-            <input type="text" id="project-name" name="project-name" placeholder="Riverfront Promenade">
-            <small>TIP: Give it a short name.</small>
+    <div id="projects-page" style="display: none;">
+      <dialog id="new-project-modal">
+        <form>
+          <h2>New Project</h2>
+          <div class="input-list">
+            <div class="form-field-container">
+              <label for="project-name">Project Name</label>
+              <input type="text" id="project-name" name="project-name" placeholder="Riverfront Promenade">
+              <small>TIP: Give it a short name.</small>
+            </div>
+            <div class="form-field-container">
+              <label for="project-description">Project Description</label>
+              <textarea id="project-description" name="project-description" rows="5"
+                placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+            </div>
+            <div class="form-field-container">
+              <label for="role">Role</label>
+              <select id="role" name="role">
+                <option value="architect">Architect</option>
+                <option value="engineer">Engineer</option>
+                <option value="developer">Developer</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="finished">Finished</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label for="finish-date">Finish Date</label>
+              <input type="date" id="finish-date" name="finish-date">
+            </div>
           </div>
-          <div class="form-field-container">
-            <label for="project-description">Project Description</label>
-            <textarea id="project-description" name="project-description" rows="5" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Accept</button>
           </div>
-          <div class="form-field-container">
-            <label for="role">Role</label>
-            <select id="role" name="role">
-              <option value="architect">Architect</option>
-              <option value="engineer">Engineer</option>
-              <option value="developer">Developer</option>
-            </select>
-          </div>
-          <div class="form-field-container">
-            <label for="status">Status</label>
-            <select id="status" name="status">
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="finished">Finished</option>
-            </select>
-          </div>
-          <div class="form-field-container">
-            <label for="finish-date">Finish Date</label>
-            <input type="date" id="finish-date" name="finish-date">
-          </div>
+        </form>
+      </dialog>
+      <header>
+        <h1>Projects</h1>
+        <div>
+          <button>New Project</button>
         </div>
-        <div class="form-actions">
-          <button type="button" class="btn-secondary">Cancel</button>
-          <button type="submit" class="btn-primary">Accept</button>
-        </div>
-      </form>
-    </dialog>
-    <header>
-      <h1>Projects</h1>
-      <div>
-        <button>New Project</button>
-      </div>
-    </header>
-    <div id="projects-list">
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
-          <div>
-            <h5>Project 1</h5>
-            <p>Project description</p>
+      </header>
+      <div id="projects-list">
+        <div class="project-card">
+          <div class="card-header">
+            <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
+            <div>
+              <h5>Project 1</h5>
+              <p>Project description</p>
+            </div>
           </div>
-        </div>
-        <div class="card-content">
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
-          <div>
-            <h5>Project 1</h5>
-            <p>Project description</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
-          <div>
-            <h5>Project 1</h5>
-            <p>Project description</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
-          <div>
-            <h5>Project 1</h5>
-            <p>Project description</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
-          <div>
-            <h5>Project 1</h5>
-            <p>Project description</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">NC</p>
-          <div>
-            <h5>Project 1</h5>
-            <p>Project description</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
-          </div>
-          <div class="card-properties">
-            <p style="color: #969696;">Status</p>
-            <p>In Progress</p>
+          <div class="card-content">
+            <div class="card-properties">
+              <p style="color: #969696;">Status</p>
+              <p>In Progress</p>
+            </div>
+            <div class="card-properties">
+              <p style="color: #969696;">Status</p>
+              <p>In Progress</p>
+            </div>
+            <div class="card-properties">
+              <p style="color: #969696;">Status</p>
+              <p>In Progress</p>
+            </div>
+            <div class="card-properties">
+              <p style="color: #969696;">Status</p>
+              <p>In Progress</p>
+            </div>
+            <div class="card-properties">
+              <p style="color: #969696;">Status</p>
+              <p>In Progress</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div id="project-details">
+      <header>
+        <div>
+          <h2>Hospital Center</h2>
+          <p style="color: #969696;">Project description</p>
+        </div>
+      </header>
+      <div class="main-page-content">
+        <div>
+          <div class="dashboard-card project-info-card">
+            <div class="project-header">
+              <div class="project-avatar">HC</div>
+              <button class="btn-outline">Edit</button>
+            </div>
+            <div class="project-info">
+              <h3>Hospital Center</h3>
+              <p>Community hospital located at downtown</p>
+            </div>
+            <div class="project-details">
+              <div class="details-grid">
+                <div class="detail-item">
+                  <span class="label">Status</span>
+                  <span class="value">Active</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Cost</span>
+                  <span class="value">$ 2'542.000</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Role</span>
+                  <span class="value">Engineer</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Finish Date</span>
+                  <span class="value">2023-05-01</span>
+                </div>
+              </div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress" style="width: 80%"></div>
+              </div>
+              <span class="progress-text">80%</span>
+            </div>
+          </div>
+          <div class="dashboard-card todo-card">
+            <div class="todo-header">
+              <div>To-Do</div>
+              <div class="todo-actions">
+                <div class="search-container">
+                  <span class="material-symbols-outlined">search</span>
+                  <input type="text" placeholder="Search To-Do's by name">
+                </div>
+                <button class="btn-icon">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+              </div>
+            </div>
+            <div class="todo-list">
+              <div class="todo-item">
+                <div class="todo-content">
+                  <span class="material-symbols-outlined">build</span>
+                  <p>Make anything here as you want, even something longer.</p>
+                </div>
+                <span class="todo-date">Fri, 20 sep</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="viewer-container" class="dashboard-card"> </div>
+      </div>
+    </div>
   </main>
-  <script src="./js/modal.js"></script>
 </body>
 
 </html>
