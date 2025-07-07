@@ -1,0 +1,19 @@
+.viewer-area {
+  background-color: var(--background);
+  border-radius: var(--border-radius);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Assicura che il canvas Three.js riempia tutto lo spazio */
+.viewer-area canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: var(--border-radius);
+} 

@@ -1,0 +1,218 @@
+/* Tasks Page Styles */
+.tasks-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tasks-page__header {
+  padding: var(--spacing-3xl) var(--spacing-4xl);
+  border-bottom: 1px solid var(--background-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.tasks-page__header h1 {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.tasks-page__content {
+  flex: 1;
+  padding: var(--spacing-xl) var(--spacing-4xl);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.tasks-page__filters {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-4xl);
+  background: var(--background-200);
+  border: 1px solid var(--background-300);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+}
+
+.search-box .material-symbols-outlined {
+  position: absolute;
+  left: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: var(--font-lg);
+}
+
+/* Table */
+.tasks-page__table {
+  background: var(--background-200);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 120px 140px 180px 120px 100px;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--background-300);
+  font-weight: 600;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 120px 140px 180px 120px 100px;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--background-300);
+  transition: var(--transition);
+}
+
+.table-row:hover {
+  background: var(--background-300);
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-sm);
+}
+
+.task-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.task-icon {
+  color: var(--text-secondary);
+  font-size: var(--font-lg) !important;
+}
+
+.task-title {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Badges */
+.priority-badge,
+.status-badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.priority-badge--high {
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+}
+
+.priority-badge--medium {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.priority-badge--low {
+  background: rgba(46, 204, 64, 0.1);
+  color: #2ecc40;
+}
+
+.status-badge--pending {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.status-badge--in-progress {
+  background: rgba(2, 154, 224, 0.1);
+  color: var(--primary);
+}
+
+.status-badge--completed {
+  background: rgba(46, 204, 64, 0.1);
+  color: #2ecc40;
+}
+
+.assignee {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.assignee-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.task-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .table-cell {
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--background-300);
+  }
+  
+  .table-cell:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .tasks-page__header {
+    padding: var(--spacing-xl);
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .tasks-page__content {
+    padding: var(--spacing-base) var(--spacing-xl);
+  }
+  
+  .tasks-page__filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+} 

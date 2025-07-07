@@ -1,0 +1,90 @@
+.sidebar {
+  padding: var(--spacing-3xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xl);
+  height: 100%;
+}
+
+/* Logo */
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar__logo-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-base);
+}
+
+.sidebar__logo-text {
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.sidebar__logo-main {
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+}
+
+.sidebar__logo-sub {
+  font-size: var(--font-base);
+  color: var(--primary);
+}
+
+/* Navigation */
+.sidebar__nav {
+  flex: 1;
+}
+
+.sidebar__nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.sidebar__nav-item {
+  width: 100%;
+}
+
+/* Common styles for both buttons and links */
+.sidebar__nav-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-base);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  text-align: left;
+  text-decoration: none; /* For NavLink */
+}
+
+.sidebar__nav-button:hover {
+  background-color: var(--primary-300);
+  color: var(--text-primary);
+}
+
+.sidebar__nav-button--active {
+  background-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.sidebar__nav-button--active:hover {
+  background-color: var(--primary-300);
+}
+
+.sidebar__nav-icon {
+  font-size: var(--font-xl) !important;
+  flex-shrink: 0;
+} 
