@@ -33,6 +33,13 @@
   display: flex;
   gap: var(--spacing-lg);
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.projects-search-box {
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
 }
 
 .filter-group {
@@ -184,6 +191,11 @@
   .projects-page__filters {
     flex-direction: column;
     align-items: stretch;
+  }
+  
+  .projects-search-box {
+    min-width: 100%;
+    max-width: 100%;
   }
   
   .projects-page__grid {

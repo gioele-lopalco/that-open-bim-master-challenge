@@ -1,15 +1,15 @@
 import Layout from '../components/Layout';
 import Sidebar from '../components/Sidebar';
+import SearchBox from '../components/common/SearchBox';
 import { useProjects } from '../hooks/useProjects';
 import { useNavigate } from 'react-router-dom';
 import './ProjectsPage.css';
 
 function ProjectsPage() {
-  const { projects, navigation } = useProjects();
+  const { projects, navigation, projectSearchQuery, handleSearchProjects } = useProjects();
   const navigate = useNavigate();
 
   const handleProjectClick = (projectId: string) => {
-    // Naviga alla dashboard passando l'ID del progetto
     navigate('/dashboard', { state: { selectedProjectId: parseInt(projectId) } });
   };
 
@@ -33,6 +33,12 @@ function ProjectsPage() {
         
         <div className="projects-page__content">
           <div className="projects-page__filters">
+            <SearchBox
+              placeholder="Cerca progetti per nome..."
+              value={projectSearchQuery}
+              onChange={handleSearchProjects}
+              className="projects-search-box"
+            />
             <div className="filter-group">
               <label>Status:</label>
               <select className="filter-select">
@@ -87,7 +93,7 @@ function ProjectsPage() {
                       className="btn-icon"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Logica per editare il progetto
+                        // Logic to edit the project
                       }}
                     >
                       <span className="material-symbols-outlined">edit</span>
@@ -96,7 +102,7 @@ function ProjectsPage() {
                       className="btn-icon"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Logica per visualizzare i dettagli
+                        // Logic to view the details
                       }}
                     >
                       <span className="material-symbols-outlined">visibility</span>

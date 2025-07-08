@@ -148,8 +148,9 @@ export const useProjects = (props?: UseProjectsProps) => {
   const [currentProject, setCurrentProject] = useState<Project>(mockProjects[0]);
   const [todos, setTodos] = useState<TodoItem[]>(mockTodos);
   const [searchQuery, setSearchQuery] = useState('');
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
 
-  // Aggiorna il progetto corrente quando cambia selectedProjectId
+  // Update the current project when selectedProjectId changes
   useEffect(() => {
     if (props?.selectedProjectId !== undefined) {
       const selectedProject = mockProjects.find(p => p.id === props.selectedProjectId!.toString());
@@ -186,19 +187,30 @@ export const useProjects = (props?: UseProjectsProps) => {
     setSearchQuery(query);
   };
 
+  const handleSearchProjects = (query: string) => {
+    setProjectSearchQuery(query);
+  };
+
   const filteredTodos = todos.filter(todo =>
     todo.text.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const filteredProjects = mockProjects.filter(project =>
+    project.name.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
+    project.description.toLowerCase().includes(projectSearchQuery.toLowerCase())
+  );
+
   return {
     currentProject,
-    projects: mockProjects,
+    projects: filteredProjects,
     todos: filteredTodos,
     navigation: mockNavigation,
     searchQuery,
+    projectSearchQuery,
     handleEditProject,
     handleAddTodo,
     handleSearchTodos,
+    handleSearchProjects,
     setCurrentProject
   };
 }; 
