@@ -2,6 +2,7 @@ import React from 'react';
 import type { Project } from '../types/Project';
 import Avatar from './common/Avatar';
 import ProgressBar from './common/ProgressBar';
+import { generateProjectAvatar } from '../utils/projectUtils';
 import './ProjectInfoCard.css';
 
 interface ProjectInfoCardProps {
@@ -31,7 +32,7 @@ const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({ project, onEdit }) =>
     <div className="project-info-card">
       <div className="project-info-card__header">
         <Avatar 
-          initials={project.avatar}
+          initials={generateProjectAvatar(project.name)}
           backgroundColor="#ca8134"
         />
         <button className="btn btn-outline" onClick={onEdit}>
@@ -57,7 +58,7 @@ const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({ project, onEdit }) =>
             </div>
             <div className="detail-item">
               <span className="detail-label">Role</span>
-              <span className="detail-value">{project.role}</span>
+              <span className="detail-value">{project.userRole}</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Finish Date</span>

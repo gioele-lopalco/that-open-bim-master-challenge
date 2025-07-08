@@ -66,11 +66,14 @@ const ViewerArea: React.FC = () => {
       directionalLight.position.set(10, 10, 5);
       scene.add(directionalLight);
 
-      // Loading the 3D model
+      // Loading the 3D model - GEAR for all projects
+      console.log('🔧 Starting Gear model loading...');
+      
       const mtlLoader = new MTLLoader();
       mtlLoader.setPath('/Gear/');
       
       mtlLoader.load('Gear1.mtl', (materials) => {
+        console.log('✅ MTL loaded, materials found:', Object.keys(materials.materials));
         materials.preload();
         
         const objLoader = new OBJLoader();
@@ -80,8 +83,10 @@ const ViewerArea: React.FC = () => {
         objLoader.load(
           'Gear1.obj',
           (object) => {
+            console.log('✅ OBJ loaded successfully!');
+            
             // Adjust the scale and position of the model
-            object.scale.setScalar(0.1); // Reduce the scale if too large
+            object.scale.setScalar(0.15); // Slightly larger for visibility
             object.position.set(0, 0, 0);
             
             // Center the model
@@ -89,39 +94,58 @@ const ViewerArea: React.FC = () => {
             const center = box.getCenter(new THREE.Vector3());
             object.position.sub(center);
             
+            // Add slight rotation for better view
+            object.rotation.x = Math.PI * 0.1;
+            object.rotation.y = Math.PI * 0.2;
+            
             scene.add(object);
-            console.log('Modello Gear caricato con successo!');
+            console.log('🔧 Gear model added to scene!');
+            
+            // Adjust camera for better view
+            const size = box.getSize(new THREE.Vector3()).length();
+            const distance = size * 2;
+            camera.position.set(distance, distance * 0.7, distance);
+            camera.lookAt(center);
+            controls.target.copy(center);
+            controls.update();
           },
           (progress) => {
-            console.log('Caricamento OBJ:', (progress.loaded / progress.total * 100) + '%');
+            console.log('📦 Loading OBJ:', Math.round(progress.loaded / progress.total * 100) + '%');
           },
           (error) => {
-            console.error('Errore caricamento OBJ:', error);
+            console.error('❌ Error loading OBJ:', error);
             // Fallback: add a cube if the loading fails
             const geometry = new THREE.BoxGeometry(2, 2, 2);
-            const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+            const material = new THREE.MeshLambertMaterial({ color: 0xff6b6b });
             const cube = new THREE.Mesh(geometry, material);
             scene.add(cube);
+            console.log('🔴 Fallback: red cube added');
           }
         );
       }, 
       (progress) => {
-        console.log('Caricamento MTL:', (progress.loaded / progress.total * 100) + '%');
+        console.log('🎨 Loading MTL:', Math.round(progress.loaded / progress.total * 100) + '%');
       },
       (error) => {
-        console.error('Errore caricamento MTL:', error);
+        console.error('❌ Error loading MTL:', error);
+        console.log('🔄 Attempting fallback: loading OBJ without materials...');
+        
         // Fallback: load only the OBJ without materials
         const objLoader = new OBJLoader();
         objLoader.setPath('/Gear/');
         
         objLoader.load('Gear1.obj', (object) => {
-          object.scale.setScalar(0.1);
+          console.log('✅ OBJ loaded without MTL materials');
+          object.scale.setScalar(0.15);
           object.position.set(0, 0, 0);
           
           // Apply a base material
           object.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-              child.material = new THREE.MeshLambertMaterial({ color: 0x888888 });
+              child.material = new THREE.MeshLambertMaterial({ 
+                color: 0x888888,
+                transparent: false
+              });
             }
           });
           
@@ -129,8 +153,32 @@ const ViewerArea: React.FC = () => {
           const center = box.getCenter(new THREE.Vector3());
           object.position.sub(center);
           
+          // Add slight rotation for better view
+          object.rotation.x = Math.PI * 0.1;
+          object.rotation.y = Math.PI * 0.2;
+          
           scene.add(object);
-          console.log('Modello Gear caricato senza materiali MTL');
+          console.log('🔧 Gear model loaded without MTL materials');
+          
+          // Adjust camera
+          const size = box.getSize(new THREE.Vector3()).length();
+          const distance = size * 2;
+          camera.position.set(distance, distance * 0.7, distance);
+          camera.lookAt(center);
+          controls.target.copy(center);
+          controls.update();
+        }, 
+        (progress) => {
+          console.log('📦 Fallback OBJ:', Math.round(progress.loaded / progress.total * 100) + '%');
+        },
+        (error) => {
+          console.error('❌ Even the OBJ fallback failed:', error);
+          // Ultimate fallback: colored cube
+          const geometry = new THREE.BoxGeometry(2, 2, 2);
+          const material = new THREE.MeshLambertMaterial({ color: 0xff6b6b });
+          const cube = new THREE.Mesh(geometry, material);
+          scene.add(cube);
+          console.log('🔴 Ultimate fallback: red cube added');
         });
       });
 
@@ -295,7 +343,7 @@ const ViewerArea: React.FC = () => {
           (window as any).gc();
         }
         
-        console.log('Cleanup ViewerArea completato - Memory leak risolto');
+        console.log('ViewerArea cleanup completed - Memory leak resolved');
         
         // Delay to let garbage collection work
         setTimeout(() => {
@@ -304,7 +352,7 @@ const ViewerArea: React.FC = () => {
       };
 
     } catch (error) {
-      console.error('Errore durante l\'inizializzazione Three.js:', error);
+      console.error('Error during Three.js initialization:', error);
     }
   }, []);
 

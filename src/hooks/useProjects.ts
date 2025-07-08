@@ -1,75 +1,5 @@
-import { useState, useEffect } from 'react';
-import type { Project, TodoItem, NavigationItem } from '../types/Project';
-
-// Mock data per tutti i progetti
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    name: 'Construction Project 1',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'Active',
-    cost: 2542000,
-    role: 'Engineer',
-    finishDate: '2024-12-01',
-    progress: 65,
-    avatar: 'P1'
-  },
-  {
-    id: '2',
-    name: 'Construction Project 2',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'Active',
-    cost: 3100000,
-    role: 'Project Manager',
-    finishDate: '2024-12-01',
-    progress: 70,
-    avatar: 'P2'
-  },
-  {
-    id: '3',
-    name: 'Construction Project 3',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'Active',
-    cost: 2800000,
-    role: 'Architect',
-    finishDate: '2024-12-01',
-    progress: 75,
-    avatar: 'P3'
-  },
-  {
-    id: '4',
-    name: 'Construction Project 4',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'Active',
-    cost: 4200000,
-    role: 'Engineer',
-    finishDate: '2024-12-01',
-    progress: 80,
-    avatar: 'P4'
-  },
-  {
-    id: '5',
-    name: 'Construction Project 5',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'Active',
-    cost: 3500000,
-    role: 'Supervisor',
-    finishDate: '2024-12-01',
-    progress: 85,
-    avatar: 'P5'
-  },
-  {
-    id: '6',
-    name: 'Construction Project 6',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'Active',
-    cost: 5100000,
-    role: 'Project Manager',
-    finishDate: '2024-12-01',
-    progress: 90,
-    avatar: 'P6'
-  }
-];
+import { useState } from 'react';
+import type { TodoItem, NavigationItem } from '../types/Project';
 
 const mockTodos: TodoItem[] = [
   {
@@ -140,33 +70,9 @@ const mockNavigation: NavigationItem[] = [
   }
 ];
 
-interface UseProjectsProps {
-  selectedProjectId?: number;
-}
-
-export const useProjects = (props?: UseProjectsProps) => {
-  const [currentProject, setCurrentProject] = useState<Project>(mockProjects[0]);
+export const useProjects = () => {
   const [todos, setTodos] = useState<TodoItem[]>(mockTodos);
   const [searchQuery, setSearchQuery] = useState('');
-  const [projectSearchQuery, setProjectSearchQuery] = useState('');
-
-  // Update the current project when selectedProjectId changes
-  useEffect(() => {
-    if (props?.selectedProjectId !== undefined) {
-      const selectedProject = mockProjects.find(p => p.id === props.selectedProjectId!.toString());
-      if (selectedProject) {
-        setCurrentProject(selectedProject);
-      }
-    }
-  }, [props?.selectedProjectId]);
-
-  const handleEditProject = () => {
-    // Simulate project edit
-    setCurrentProject(prev => ({
-      ...prev,
-      progress: Math.min(100, prev.progress + 5)
-    }));
-  };
 
   const handleAddTodo = () => {
     const newTodo: TodoItem = {
@@ -187,30 +93,15 @@ export const useProjects = (props?: UseProjectsProps) => {
     setSearchQuery(query);
   };
 
-  const handleSearchProjects = (query: string) => {
-    setProjectSearchQuery(query);
-  };
-
   const filteredTodos = todos.filter(todo =>
     todo.text.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredProjects = mockProjects.filter(project =>
-    project.name.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
-    project.description.toLowerCase().includes(projectSearchQuery.toLowerCase())
-  );
-
   return {
-    currentProject,
-    projects: filteredProjects,
     todos: filteredTodos,
     navigation: mockNavigation,
     searchQuery,
-    projectSearchQuery,
-    handleEditProject,
     handleAddTodo,
-    handleSearchTodos,
-    handleSearchProjects,
-    setCurrentProject
+    handleSearchTodos
   };
 }; 

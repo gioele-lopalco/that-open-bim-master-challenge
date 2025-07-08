@@ -11,12 +11,12 @@ function TeamPage() {
   );
 
   const mockTeamMembers = [
-    { id: 1, name: 'John Doe', role: 'Project Manager', email: 'john.doe@company.com', phone: '+1 234 567 8901', status: 'active', avatar: 'JD' },
-    { id: 2, name: 'Jane Smith', role: 'Site Engineer', email: 'jane.smith@company.com', phone: '+1 234 567 8902', status: 'active', avatar: 'JS' },
-    { id: 3, name: 'Mike Johnson', role: 'Architect', email: 'mike.johnson@company.com', phone: '+1 234 567 8903', status: 'busy', avatar: 'MJ' },
-    { id: 4, name: 'Sarah Wilson', role: 'Safety Officer', email: 'sarah.wilson@company.com', phone: '+1 234 567 8904', status: 'active', avatar: 'SW' },
-    { id: 5, name: 'Tom Brown', role: 'Quality Inspector', email: 'tom.brown@company.com', phone: '+1 234 567 8905', status: 'offline', avatar: 'TB' },
-    { id: 6, name: 'Lisa Garcia', role: 'Cost Estimator', email: 'lisa.garcia@company.com', phone: '+1 234 567 8906', status: 'active', avatar: 'LG' },
+    { id: 1, name: 'John Doe', userRole: 'Project Manager', email: 'john.doe@company.com', phone: '+1 234 567 8901', status: 'active', avatar: 'JD' },
+    { id: 2, name: 'Jane Smith', userRole: 'Site Engineer', email: 'jane.smith@company.com', phone: '+1 234 567 8902', status: 'active', avatar: 'JS' },
+    { id: 3, name: 'Mike Johnson', userRole: 'Architect', email: 'mike.johnson@company.com', phone: '+1 234 567 8903', status: 'busy', avatar: 'MJ' },
+    { id: 4, name: 'Sarah Wilson', userRole: 'Safety Officer', email: 'sarah.wilson@company.com', phone: '+1 234 567 8904', status: 'active', avatar: 'SW' },
+    { id: 5, name: 'Tom Brown', userRole: 'Quality Inspector', email: 'tom.brown@company.com', phone: '+1 234 567 8905', status: 'offline', avatar: 'TB' },
+    { id: 6, name: 'Lisa Garcia', userRole: 'Cost Estimator', email: 'lisa.garcia@company.com', phone: '+1 234 567 8906', status: 'active', avatar: 'LG' },
   ];
 
   return (
@@ -96,7 +96,7 @@ function TeamPage() {
                   <div className={`member-status member-status--${member.status}`}></div>
                 </div>
                 <h3 className="member-card__name">{member.name}</h3>
-                <p className="member-card__role">{member.role}</p>
+                <p className="member-card__role">{member.userRole}</p>
                 <div className="member-card__contact">
                   <div className="contact-item">
                     <span className="material-symbols-outlined">email</span>

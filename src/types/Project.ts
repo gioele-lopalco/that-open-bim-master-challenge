@@ -1,13 +1,12 @@
 export interface Project {
   id: string;
-  name: string;
-  description: string;
-  status: string;
-  cost: number;
-  role: string;
-  finishDate: string;
-  progress: number;
-  avatar: string;
+  name: string; 
+  description: string; 
+  status: string; 
+  cost: number; 
+  userRole: string; 
+  finishDate: string; 
+  progress: number; 
 }
 
 export interface TodoItem {

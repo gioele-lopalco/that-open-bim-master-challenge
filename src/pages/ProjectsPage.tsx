@@ -4,14 +4,45 @@ import SearchBox from '../components/common/SearchBox';
 import { useProjects } from '../hooks/useProjects';
 import { useNavigate } from 'react-router-dom';
 import './ProjectsPage.css';
+import { useEffect, useState } from 'react';
+import type { Project } from '../types/Project';
+import { generateProjectAvatar, getProjectsFromFirebase } from '../utils/projectUtils';
 
 function ProjectsPage() {
-  const { projects, navigation, projectSearchQuery, handleSearchProjects } = useProjects();
+  const { navigation } = useProjects();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  const handleProjectClick = (projectId: string) => {
-    navigate('/dashboard', { state: { selectedProjectId: parseInt(projectId) } });
+  const handleSearchProjects = (query: string) => {
+    setProjectSearchQuery(query);
   };
+
+const loadProjects = async () => {
+  const projectsList = await getProjectsFromFirebase();
+  console.log('Projects loaded:', projectsList);
+  setProjects(projectsList);
+  return projectsList;
+}
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const projects = await loadProjects();
+      console.log(projects);
+    };
+    fetchProjects();
+  }, []);
+
+  const handleProjectClick = (projectId: string) => {
+    console.log('Navigating to project:', projectId);
+    navigate('/dashboard', { state: { selectedProjectId: projectId } });
+  };
+
+  // Filtro i progetti in base alla query di ricerca
+  const filteredProjects = projects.filter(project =>
+    project.name.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
+    project.description.toLowerCase().includes(projectSearchQuery.toLowerCase())
+  );
 
   const sidebarComponent = (
     <Sidebar navigationItems={navigation} />
@@ -60,14 +91,14 @@ function ProjectsPage() {
           </div>
 
           <div className="projects-page__grid">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <div 
                 key={project.id} 
                 className="project-card"
                 onClick={() => handleProjectClick(project.id)}
               >
                 <div className="project-card__header">
-                  <div className="project-avatar">{project.avatar}</div>
+                  <div className="project-avatar">{generateProjectAvatar(project.name)}</div>
                   <div className="project-status project-status--active">{project.status}</div>
                 </div>
                 <h3 className="project-card__title">{project.name}</h3>
