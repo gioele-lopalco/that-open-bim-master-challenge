@@ -121,6 +121,31 @@ npm run build
 npm run preview
 ```
 
+## 📦 3D Model Setup
+
+To display the 3D model in the viewer, you need to add the model files to the `public` folder:
+
+1. **Extract the files** from the provided ZIP file
+2. **Copy the `Gear` folder** to the `public/` directory of the project
+3. **Verify the file structure**:
+
+```
+public/
+└── Gear/
+    ├── Gear1.obj           # 3D model geometry
+    ├── Gear1.mtl           # Model materials
+    └── textures/           # Model textures
+        ├── Gear_1_BaseColor.png
+        ├── Gear_1_Normal.png
+        ├── Gear_1_Metallic.png
+        ├── Gear_1_Roughness.png
+        └── ... (other textures)
+```
+
+4. **Restart the development server** if it was already running
+
+**Note**: The 3D model files are not included in the Git repository due to size constraints. They must be added manually from the provided source.
+
 ## 📱 Responsive Breakpoints
 
 - **Desktop**: > 1024px (Complete layout)
