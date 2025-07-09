@@ -1,16 +1,17 @@
 # 🏗️ Construction Company Dashboard
 
-A modern React application for construction project management, built with Vite, TypeScript, and modern CSS.
+A modern React application for construction project management, built with Vite, TypeScript, Firebase, and modern CSS.
 
 ## ✨ Features
 
 - **Modern Dashboard**: Dark and professional interface with consistent design system
-- **Project Management**: Project details visualization with progress tracking
+- **Project Management**: Full CRUD operations for projects with real-time updates
 - **Todo Management**: Task system with search and filters
 - **Intuitive Navigation**: Sidebar with main menu and active state
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **TypeScript**: Complete typing for enhanced safety
 - **Performance**: Optimized build with Vite
+- **Firebase Integration**: Real-time database with Firestore
 
 ## 🎨 Design Features
 
@@ -26,6 +27,7 @@ A modern React application for construction project management, built with Vite,
 - **React 18** - Modern UI library
 - **TypeScript** - Static typing
 - **Vite** - Fast build tool
+- **Firebase** - Backend and database
 - **CSS Variables** - Scalable design system
 - **CSS Grid & Flexbox** - Responsive layout
 - **Google Fonts** - Professional typography
@@ -42,22 +44,47 @@ src/
 │   ├── Layout.tsx       # Main layout
 │   ├── Sidebar.tsx      # Side navigation
 │   ├── ProjectInfoCard.tsx
+│   ├── ProjectFormModal.tsx
 │   ├── TodoCard.tsx
 │   └── ViewerArea.tsx
-├── types/               # TypeScript definitions
+├── classes/             # TypeScript classes and interfaces
 │   └── Project.ts
-├── hooks/               # Custom hooks
+├── firebase/           # Firebase configuration
+│   └── index.ts
+├── hooks/              # Custom hooks
 │   └── useProjects.ts
-├── styles/              # Global styles
-│   ├── variables.css    # Design system
-│   └── globals.css      # Base styles
-└── App.tsx             # Main component
+├── utils/             # Utility functions
+│   └── projectUtils.ts
+├── styles/            # Global styles
+│   ├── variables.css  # Design system
+│   └── globals.css    # Base styles
+└── App.tsx           # Main component
+```
+
+## 🔥 Firebase Setup
+
+1. Create a `.env` file in the root directory
+2. Add your Firebase configuration:
+```env
+VITE_API_KEY=your-api-key
+VITE_AUTH_DOMAIN=your-auth-domain
+VITE_PROJECT_ID=your-project-id
+VITE_STORAGE_BUCKET=your-storage-bucket
+VITE_MESSAGING_SENDER_ID=your-messaging-sender-id
+VITE_APP_ID=your-app-id
 ```
 
 ## 🎯 Main Components
 
 ### Layout
 Responsive grid layout with fixed sidebar and main area
+
+### Project Management
+- Create new projects with detailed information
+- Edit existing project details
+- Delete projects with confirmation
+- Real-time updates with Firebase
+- Progress tracking and status management
 
 ### Sidebar
 - Company logo
@@ -69,7 +96,7 @@ Responsive grid layout with fixed sidebar and main area
 - Project avatar with initials
 - Project details (Status, Cost, Role, Date)
 - Animated progress bar
-- Functional edit button
+- Edit and delete functionality
 
 ### Todo Card
 - Header with search and add button
@@ -110,6 +137,8 @@ Responsive grid layout with fixed sidebar and main area
 ```bash
 # Install dependencies
 npm install
+
+# Create .env file and add Firebase config
 
 # Start dev server
 npm run dev

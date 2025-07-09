@@ -5,25 +5,89 @@ import { useProjects } from '../hooks/useProjects';
 import { useNavigate } from 'react-router-dom';
 import './ProjectsPage.css';
 import { useEffect, useState } from 'react';
-import type { Project } from '../types/Project';
-import { generateProjectAvatar, getProjectsFromFirebase } from '../utils/projectUtils';
+import type { IProject } from '../classes/Project';
+import { generateProjectAvatar } from '../utils/projectUtils';
+import { ProjectsManager } from '../classes/ProjectsManager';
+import ProjectFormModal from '../components/ProjectFormModal';
+import { deleteProjectFromFirebase, updateProjectInFirebase } from '../utils/projectUtils';
 
 function ProjectsPage() {
   const { navigation } = useProjects();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<IProject[]>([]);
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<IProject | null>(null);
+  const [projectsManager] = useState(() => new ProjectsManager());
   const navigate = useNavigate();
 
   const handleSearchProjects = (query: string) => {
     setProjectSearchQuery(query);
   };
 
-const loadProjects = async () => {
-  const projectsList = await getProjectsFromFirebase();
-  console.log('Projects loaded:', projectsList);
-  setProjects(projectsList);
-  return projectsList;
-}
+  const handleCreateProject = async (projectData: Omit<IProject, 'id'>) => {
+    try {
+      const newProject = await projectsManager.newProject(projectData);
+      console.log('New project created:', newProject);
+      
+      // Refresh the projects list
+      await loadProjects();
+    } catch (error) {
+      console.error('Failed to create project:', error);
+      throw error;
+    }
+  };
+
+  const handleUpdateProject = async (projectData: Omit<IProject, 'id'>) => {
+    try {
+      if (!selectedProject) return;
+      
+      await updateProjectInFirebase(selectedProject.id, projectData);
+      
+      // Refresh the projects list
+      await loadProjects();
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to update project:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!window.confirm('Sei sicuro di voler eliminare questo progetto?')) {
+      return;
+    }
+
+    try {
+      await deleteProjectFromFirebase(projectId);
+      
+      // Refresh the projects list
+      await loadProjects();
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+      alert('Errore durante l\'eliminazione del progetto');
+    }
+  };
+
+  const handleOpenModal = (project?: IProject) => {
+    if (project) {
+      setSelectedProject(project);
+    } else {
+      setSelectedProject(null);
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
+  };
+
+  const loadProjects = async () => {
+    const projectsList = await projectsManager.list;
+    console.log('Projects loaded:', projectsList);
+    setProjects(projectsList);
+    return projectsList;
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -33,15 +97,9 @@ const loadProjects = async () => {
     fetchProjects();
   }, []);
 
-  const handleProjectClick = (projectId: string) => {
-    console.log('Navigating to project:', projectId);
-    navigate('/dashboard', { state: { selectedProjectId: projectId } });
-  };
-
-  // Filtro i progetti in base alla query di ricerca
+  // Filter projects based on search query
   const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
-    project.description.toLowerCase().includes(projectSearchQuery.toLowerCase())
+    project.name.toLowerCase().includes(projectSearchQuery.toLowerCase())
   );
 
   const sidebarComponent = (
@@ -53,12 +111,12 @@ const loadProjects = async () => {
       <div className="projects-page">
         <header className="projects-page__header">
           <div>
-            <h1>Projects</h1>
-            <p className="text-secondary">Manage and overview all construction projects</p>
+            <h1>I Miei Progetti</h1>
+            <p className="text-secondary">Gestisci e monitora i tuoi progetti</p>
           </div>
-          <button className="btn btn--primary">
+          <button className="btn btn-primary" onClick={() => handleOpenModal()}>
             <span className="material-symbols-outlined">add</span>
-            New Project
+            Nuovo Progetto
           </button>
         </header>
         
@@ -95,16 +153,20 @@ const loadProjects = async () => {
               <div 
                 key={project.id} 
                 className="project-card"
-                onClick={() => handleProjectClick(project.id)}
+                onClick={() => navigate(`/projects/${project.id}`)}
               >
                 <div className="project-card__header">
-                  <div className="project-avatar">{generateProjectAvatar(project.name)}</div>
-                  <div className="project-status project-status--active">{project.status}</div>
+                  <div className="project-avatar">
+                    {generateProjectAvatar(project.name)}
+                  </div>
+                  <span className={`project-status project-status--${project.status.toLowerCase()}`}>
+                    {project.status}
+                  </span>
                 </div>
+
                 <h3 className="project-card__title">{project.name}</h3>
-                <p className="project-card__description">
-                  {project.description}
-                </p>
+                <p className="project-card__description">{project.description}</p>
+
                 <div className="project-card__progress">
                   <div className="progress-info">
                     <span>Progress</span>
@@ -114,18 +176,25 @@ const loadProjects = async () => {
                     <div 
                       className="progress-fill" 
                       style={{ width: `${project.progress}%` }}
-                    ></div>
+                    />
                   </div>
                 </div>
+
                 <div className="project-card__footer">
-                  <span className="project-date">Due: {new Date(project.finishDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                  <span className="project-date">
+                    Due: {new Date(project.finishDate).toLocaleDateString('it-IT', { 
+                      month: 'short', 
+                      year: 'numeric' 
+                    })}
+                  </span>
                   <div className="project-actions">
                     <button 
                       className="btn-icon"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Logic to edit the project
+                        handleOpenModal(project);
                       }}
+                      title="Modifica progetto"
                     >
                       <span className="material-symbols-outlined">edit</span>
                     </button>
@@ -133,10 +202,11 @@ const loadProjects = async () => {
                       className="btn-icon"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Logic to view the details
+                        handleDeleteProject(project.id);
                       }}
+                      title="Elimina progetto"
                     >
-                      <span className="material-symbols-outlined">visibility</span>
+                      <span className="material-symbols-outlined">delete</span>
                     </button>
                   </div>
                 </div>
@@ -145,6 +215,13 @@ const loadProjects = async () => {
           </div>
         </div>
       </div>
+
+      <ProjectFormModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={selectedProject ? handleUpdateProject : handleCreateProject}
+        initialData={selectedProject}
+      />
     </Layout>
   );
 }

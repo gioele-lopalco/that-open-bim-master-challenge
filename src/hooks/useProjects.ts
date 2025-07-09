@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TodoItem, NavigationItem } from '../types/Project';
+import type { TodoItem, NavigationItem } from '../classes/Project';
 
 const mockTodos: TodoItem[] = [
   {

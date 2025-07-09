@@ -1,12 +1,12 @@
 import React from 'react';
-import type { Project } from '../types/Project';
+import type { IProject } from '../classes/Project';
 import Avatar from './common/Avatar';
 import ProgressBar from './common/ProgressBar';
 import { generateProjectAvatar } from '../utils/projectUtils';
 import './ProjectInfoCard.css';
 
 interface ProjectInfoCardProps {
-  project: Project;
+  project: IProject;
   onEdit?: () => void;
 }
 
@@ -20,8 +20,9 @@ const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({ project, onEdit }) =>
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (date: Date | string) => {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'

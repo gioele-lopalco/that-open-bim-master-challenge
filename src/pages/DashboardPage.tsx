@@ -6,8 +6,8 @@ import ViewerArea from '../components/ViewerArea';
 import { useProjects } from '../hooks/useProjects';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import type { Project } from '../types/Project';
-import { getProjectByIdFromFirebase, getProjectsFromFirebase } from '../utils/projectUtils';
+import type { IProject } from '../classes/Project';
+import { ProjectsManager } from '../classes/ProjectsManager';
 import './DashboardPage.css';
 
 function DashboardPage() {
@@ -23,13 +23,14 @@ function DashboardPage() {
     handleSearchTodos
   } = useProjects();
 
-  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [currentProject, setCurrentProject] = useState<IProject | null>(null);
   const [loading, setLoading] = useState(true);
+  const [projectsManager] = useState(() => new ProjectsManager());
 
   const loadProjectById = async (projectId: string) => {
     try {
       console.log('Loading project with ID:', projectId);
-      const project = await getProjectByIdFromFirebase(projectId);
+      const project = await projectsManager.getProjectById(projectId);
       console.log('Project found:', project);
       setCurrentProject(project);
     } catch (error) {
@@ -50,7 +51,7 @@ function DashboardPage() {
 
   const loadFirstAvailableProject = async () => {
     try {
-      const projects = await getProjectsFromFirebase();
+      const projects = await projectsManager.list;
       if (projects.length > 0) {
         console.log('Loading first available project:', projects[0]);
         setCurrentProject(projects[0]);

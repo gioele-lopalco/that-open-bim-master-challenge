@@ -46,10 +46,10 @@ export const generateProjectAvatar = (name: string): string => {
  */
 export const getProjectsFromFirebase = async () => {
   const { collection, getDocs } = await import('firebase/firestore');
-  const { db } = await import('../firebase');
+  const { firebaseDB } = await import('../firebase');
 
   try {
-    const projectsCollection = collection(db, 'projects');
+    const projectsCollection = collection(firebaseDB, 'projects');
     const firebaseProjects = await getDocs(projectsCollection);
     const projectsList: any[] = [];
     
@@ -89,4 +89,94 @@ export const getProjectByIdFromFirebase = async (projectId: string) => {
   console.log('Project found:', foundProject);
   
   return foundProject || projects[0] || null;
+};
+
+/**
+ * Creates a new project in Firebase
+ */
+export const createProjectInFirebase = async (projectData: Omit<any, 'id'>) => {
+  const { collection, addDoc, Timestamp } = await import('firebase/firestore');
+  const { firebaseDB } = await import('../firebase');
+
+  try {
+    console.log('Creating new project:', projectData);
+
+    // Convert finishDate string to Firebase Timestamp
+    const dataToSave = {
+      ...projectData,
+      finishDate: projectData.finishDate 
+        ? Timestamp.fromDate(new Date(projectData.finishDate))
+        : Timestamp.fromDate(new Date('2024-12-01'))
+    };
+
+    const projectsCollection = collection(firebaseDB, 'projects');
+    const docRef = await addDoc(projectsCollection, dataToSave);
+    
+    console.log('Project created with ID:', docRef.id);
+    
+    // Return the created project with the Firebase-generated ID
+    return {
+      id: docRef.id,
+      ...projectData
+    };
+  } catch (error) {
+    console.error('Error creating project:', error);
+    throw error;
+  }
+}; 
+
+/**
+ * Updates an existing project in Firebase
+ */
+export const updateProjectInFirebase = async (projectId: string, projectData: Partial<any>) => {
+  const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
+  const { firebaseDB } = await import('../firebase');
+
+  try {
+    console.log('Updating project:', projectId, projectData);
+
+    const projectRef = doc(firebaseDB, 'projects', projectId);
+    
+    // Convert finishDate string to Firebase Timestamp if present
+    const dataToUpdate = {
+      ...projectData,
+      finishDate: projectData.finishDate 
+        ? Timestamp.fromDate(new Date(projectData.finishDate))
+        : undefined
+    };
+
+    await updateDoc(projectRef, dataToUpdate);
+    
+    console.log('Project updated successfully');
+    
+    // Return the updated project data
+    return {
+      id: projectId,
+      ...projectData
+    };
+  } catch (error) {
+    console.error('Error updating project:', error);
+    throw error;
+  }
+};
+
+/**
+ * Deletes a project from Firebase
+ */
+export const deleteProjectFromFirebase = async (projectId: string) => {
+  const { doc, deleteDoc } = await import('firebase/firestore');
+  const { firebaseDB } = await import('../firebase');
+
+  try {
+    console.log('Deleting project:', projectId);
+
+    const projectRef = doc(firebaseDB, 'projects', projectId);
+    await deleteDoc(projectRef);
+    
+    console.log('Project deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    throw error;
+  }
 }; 
