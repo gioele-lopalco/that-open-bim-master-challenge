@@ -53,7 +53,7 @@ function ProjectsPage() {
   };
 
   const handleDeleteProject = async (projectId: string) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questo progetto?')) {
+    if (!window.confirm('Are you sure you want to delete this project?')) {
       return;
     }
 
@@ -64,7 +64,7 @@ function ProjectsPage() {
       await loadProjects();
     } catch (error) {
       console.error('Failed to delete project:', error);
-      alert('Errore durante l\'eliminazione del progetto');
+      alert('Error deleting project');
     }
   };
 
@@ -111,19 +111,19 @@ function ProjectsPage() {
       <div className="projects-page">
         <header className="projects-page__header">
           <div>
-            <h1>I Miei Progetti</h1>
-            <p className="text-secondary">Gestisci e monitora i tuoi progetti</p>
+            <h1>My Projects</h1>
+            <p className="text-secondary">Manage and monitor your projects</p>
           </div>
           <button className="btn btn-primary" onClick={() => handleOpenModal()}>
             <span className="material-symbols-outlined">add</span>
-            Nuovo Progetto
+            New Project
           </button>
         </header>
         
         <div className="projects-page__content">
           <div className="projects-page__filters">
             <SearchBox
-              placeholder="Cerca progetti per nome..."
+              placeholder="Search projects by name..."
               value={projectSearchQuery}
               onChange={handleSearchProjects}
               className="projects-search-box"
@@ -153,7 +153,7 @@ function ProjectsPage() {
               <div 
                 key={project.id} 
                 className="project-card"
-                onClick={() => navigate(`/projects/${project.id}`)}
+                onClick={() => navigate(`/project/${project.id}`)}
               >
                 <div className="project-card__header">
                   <div className="project-avatar">
@@ -182,7 +182,7 @@ function ProjectsPage() {
 
                 <div className="project-card__footer">
                   <span className="project-date">
-                    Due: {new Date(project.finishDate).toLocaleDateString('it-IT', { 
+                    Due: {new Date(project.finishDate).toLocaleDateString('en-US', { 
                       month: 'short', 
                       year: 'numeric' 
                     })}
@@ -194,7 +194,7 @@ function ProjectsPage() {
                         e.stopPropagation();
                         handleOpenModal(project);
                       }}
-                      title="Modifica progetto"
+                      title="Edit project"
                     >
                       <span className="material-symbols-outlined">edit</span>
                     </button>
@@ -204,7 +204,7 @@ function ProjectsPage() {
                         e.stopPropagation();
                         handleDeleteProject(project.id);
                       }}
-                      title="Elimina progetto"
+                      title="Delete project"
                     >
                       <span className="material-symbols-outlined">delete</span>
                     </button>

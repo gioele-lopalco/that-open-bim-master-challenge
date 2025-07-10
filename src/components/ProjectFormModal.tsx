@@ -67,7 +67,7 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      alert('Il nome del progetto è obbligatorio');
+      alert('Project name is required');
       return;
     }
 
@@ -97,7 +97,7 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
       onClose();
     } catch (error) {
       console.error('Error submitting project:', error);
-      alert('Errore durante il salvataggio del progetto');
+      alert('Error saving project');
     } finally {
       setIsSubmitting(false);
     }
@@ -115,7 +115,7 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
     <div className="modal-overlay" onClick={handleModalClick}>
       <div className="modal-content">
         <div className="modal-header">
-          <h2>{initialData ? 'Modifica Progetto' : 'Nuovo Progetto'}</h2>
+          <h2>{initialData ? 'Edit Project' : 'New Project'}</h2>
           <button 
             className="modal-close-btn" 
             onClick={onClose}
@@ -127,59 +127,59 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
         
         <form onSubmit={handleSubmit} className="project-form">
           <div className="form-group">
-            <label htmlFor="name">Nome Progetto *</label>
+            <label htmlFor="name">Project Name *</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Inserisci il nome del progetto"
+              placeholder="Enter project name"
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Descrizione</label>
+            <label htmlFor="description">Description</label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Inserisci la descrizione del progetto"
+              placeholder="Enter project description"
               rows={3}
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="status">Stato</label>
+              <label htmlFor="status">Status</label>
               <select
                 id="status"
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
               >
-                <option value={ProjectStatus.ACTIVE}>Attivo</option>
-                <option value={ProjectStatus.PENDING}>In Attesa</option>
-                <option value={ProjectStatus.COMPLETED}>Completato</option>
-                <option value={ProjectStatus.ON_HOLD}>In Pausa</option>
+                <option value={ProjectStatus.ACTIVE}>Active</option>
+                <option value={ProjectStatus.PENDING}>Pending</option>
+                <option value={ProjectStatus.COMPLETED}>Completed</option>
+                <option value={ProjectStatus.ON_HOLD}>On Hold</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="userRole">Ruolo</label>
+              <label htmlFor="userRole">Role</label>
               <select
                 id="userRole"
                 name="userRole"
                 value={formData.userRole}
                 onChange={handleInputChange}
               >
-                <option value={UserRole.ENGINEER}>Ingegnere</option>
-                <option value={UserRole.ARCHITECT}>Architetto</option>
+                <option value={UserRole.ENGINEER}>Engineer</option>
+                <option value={UserRole.ARCHITECT}>Architect</option>
                 <option value={UserRole.PROJECT_MANAGER}>Project Manager</option>
-                <option value={UserRole.SUPERVISOR}>Supervisore</option>
-                <option value={UserRole.DEVELOPER}>Sviluppatore</option>
+                <option value={UserRole.SUPERVISOR}>Supervisor</option>
+                <option value={UserRole.DEVELOPER}>Developer</option>
               </select>
             </div>
           </div>
@@ -200,7 +200,7 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
             </div>
 
             <div className="form-group">
-              <label htmlFor="progress">Progresso (%)</label>
+              <label htmlFor="progress">Progress (%)</label>
               <input
                 type="number"
                 id="progress"
@@ -215,7 +215,7 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
           </div>
 
           <div className="form-group">
-            <label htmlFor="finishDate">Data di Completamento</label>
+            <label htmlFor="finishDate">Completion Date</label>
             <input
               type="date"
               id="finishDate"
@@ -232,14 +232,14 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ isOpen, onClose, on
               onClick={onClose}
               disabled={isSubmitting}
             >
-              Annulla
+              Cancel
             </button>
             <button 
               type="submit" 
               className="btn btn-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Salvataggio...' : initialData ? 'Salva Modifiche' : 'Crea Progetto'}
+              {isSubmitting ? 'Saving...' : initialData ? 'Save Changes' : 'Create Project'}
             </button>
           </div>
         </form>

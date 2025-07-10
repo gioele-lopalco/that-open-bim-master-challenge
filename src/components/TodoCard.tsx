@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import type { TodoItem } from '../types/Project';
+import type { TodoItem } from '../classes/Project';
+import { TodoStatus, TodoPriority } from '../classes/Project';
 import './TodoCard.css';
 
 interface TodoCardProps {
   todos: TodoItem[];
   onAddTodo?: () => void;
   onSearchChange?: (query: string) => void;
+  onToggleStatus?: (todoId: string, currentStatus: TodoStatus) => void;
+  onManageTasks?: () => void;
 }
 
-const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange }) => {
+const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange, onToggleStatus, onManageTasks }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,8 +21,26 @@ const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange })
   };
 
   const filteredTodos = todos.filter(todo =>
-    todo.text.toLowerCase().includes(searchQuery.toLowerCase())
+    todo.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (todo.description && todo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (todo.assignedTo && todo.assignedTo.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const priorityColors = {
+    [TodoPriority.LOW]: '#10b981',
+    [TodoPriority.MEDIUM]: '#f59e0b', 
+    [TodoPriority.HIGH]: '#ef4444',
+    [TodoPriority.URGENT]: '#dc2626'
+  };
+
+  const statusIcons = {
+    [TodoStatus.TODO]: 'radio_button_unchecked',
+    [TodoStatus.IN_PROGRESS]: 'schedule',
+    [TodoStatus.DONE]: 'check_circle',
+    [TodoStatus.CANCELLED]: 'cancel'
+  };
+
+
 
   return (
     <div className="todo-card">
@@ -45,14 +66,44 @@ const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange })
         {filteredTodos.length > 0 ? (
           <div className="todo-list">
             {filteredTodos.map((todo) => (
-              <div key={todo.id} className="todo-item">
-                <div className="todo-item__content">
-                  <span className="material-symbols-outlined todo-item__icon">
-                    {todo.icon}
-                  </span>
-                  <p className="todo-item__text">{todo.text}</p>
+              <div key={todo.id} className={`todo-item todo-item--${todo.status.toLowerCase().replace(' ', '-')}`}>
+                <div className="todo-item__header">
+                  <button 
+                    className="todo-status-btn-simple"
+                    onClick={() => onToggleStatus?.(todo.id, todo.status)}
+                    title={`Status: ${todo.status}`}
+                  >
+                    <span className="material-symbols-outlined">
+                      {statusIcons[todo.status]}
+                    </span>
+                  </button>
+                  
+                  <div 
+                    className="todo-priority-dot" 
+                    style={{ backgroundColor: priorityColors[todo.priority] }}
+                    title={`Priority: ${todo.priority}`}
+                  />
                 </div>
-                <span className="todo-item__date">{todo.date}</span>
+                
+                <div className="todo-item__content">
+                  <div className="todo-item__main">
+                    <span className="material-symbols-outlined todo-item__icon">
+                      {todo.icon || 'task'}
+                    </span>
+                    <div className="todo-item__info">
+                      <p className="todo-item__title">{todo.title}</p>
+                      {todo.description && (
+                        <p className="todo-item__description">{todo.description}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="todo-item__meta">
+                  {todo.assignedTo && (
+                    <span className="todo-item__assignee">{todo.assignedTo}</span>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -61,6 +112,13 @@ const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange })
             <p className="text-secondary">No tasks found</p>
           </div>
         )}
+      </div>
+
+      <div className="todo-card__footer">
+        <button className="btn btn-primary btn-manage-tasks" onClick={onManageTasks}>
+          <span className="material-symbols-outlined">task</span>
+          Manage Tasks
+        </button>
       </div>
     </div>
   );

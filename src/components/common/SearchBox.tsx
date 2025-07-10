@@ -9,7 +9,7 @@ interface SearchBoxProps {
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
-  placeholder = "Cerca...",
+  placeholder = "Search...",
   value,
   onChange,
   className = ""

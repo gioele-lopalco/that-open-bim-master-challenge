@@ -1,8 +1,31 @@
+export const TodoStatus = {
+  TODO: 'To Do',
+  IN_PROGRESS: 'In Progress',
+  DONE: 'Done',
+  CANCELLED: 'Cancelled'
+} as const;
+
+export type TodoStatus = typeof TodoStatus[keyof typeof TodoStatus];
+
+export const TodoPriority = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High',
+  URGENT: 'Urgent'
+} as const;
+
+export type TodoPriority = typeof TodoPriority[keyof typeof TodoPriority];
+
 export interface TodoItem {
   id: string;
-  text: string;
-  date: string;
-  icon: string;
+  title: string;
+  description?: string;
+  status: TodoStatus;
+  priority: TodoPriority;
+  updatedAt?: Date;
+  assignedTo?: string;
+  projectId: string;
+  icon?: string;
 }
 
 export interface NavigationItem {
