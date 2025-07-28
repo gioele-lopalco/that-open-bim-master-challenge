@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import * as OBF from '@thatopen/components-front';
+import { PropertyInformationPanel } from './PropertyInformationPanel';
 import './IFCViewer.css';
 
 export function IFCViewer() {
@@ -13,12 +14,67 @@ export function IFCViewer() {
   const [hasModel, setHasModel] = useState(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isolatedItems, setIsolatedItems] = useState<Set<string>>(new Set());
+  const [showPropertyPanel, setShowPropertyPanel] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isInitialized = useRef(false);
   const componentsRef = useRef<OBC.Components | null>(null);
   const worldRef = useRef<any>(null);
   const highlighterRef = useRef<OBF.Highlighter | null>(null);
+
+  // Function to process IFC data for property panel
+  const processIFCData = (rawData: any[]): any[] => {
+    return rawData.map(item => {
+      console.log('🔍 Processing IFC item:', item);
+      
+      // Helper function to extract value from IFC property structure
+      const extractValue = (prop: any): any => {
+        if (prop && typeof prop === 'object' && 'value' in prop) {
+          return prop.value;
+        }
+        return prop;
+      };
+      
+      // Extract basic properties with better fallback logic
+      const processedItem: any = {
+        id: extractValue(item._localId) || extractValue(item.expressID) || extractValue(item.localId) || extractValue(item.id),
+        name: extractValue(item.Name) || 'Unnamed Element',
+        type: extractValue(item._category) || extractValue(item.type) || 'Unknown',
+        globalId: extractValue(item._guid) || extractValue(item.GlobalId) || 'N/A',
+        objectType: extractValue(item.ObjectType),
+        tag: extractValue(item.Tag),
+        predefinedType: extractValue(item.PredefinedType),
+        propertySets: [],
+        materials: [],
+        spatialContainer: null
+      };
+
+      // Extract property sets if available
+      if (item.psets) {
+        processedItem.propertySets = Object.entries(item.psets).map(([psetName, psetData]: [string, any]) => ({
+          name: psetName,
+          properties: Object.entries(psetData).map(([propName, propValue]: [string, any]) => ({
+            name: propName,
+            value: extractValue(propValue),
+            type: propValue?.type || typeof propValue
+          }))
+        }));
+      }
+
+      // Extract materials if available
+      if (item.materials) {
+        processedItem.materials = Array.isArray(item.materials) ? item.materials : [item.materials];
+      }
+
+      // Extract spatial container if available
+      if (item.containedInStructure) {
+        processedItem.spatialContainer = item.containedInStructure;
+      }
+
+      console.log('✅ Processed item:', processedItem);
+      return processedItem;
+    });
+  };
 
   const setViewer = async () => {
     if (isInitialized.current) {
@@ -150,14 +206,17 @@ export function IFCViewer() {
           promises.push(model.getItemsData([...localIds]));
         }
 
-        const data = (await Promise.all(promises)).flat();
-        setSelectedItems(data);
-        console.log('📊 Selected elements data:', data);
+        const rawData = (await Promise.all(promises)).flat();
+        const processedData = processIFCData(rawData);
+        setSelectedItems(processedData);
+        setShowPropertyPanel(true);
+        console.log('📊 Selected elements data:', processedData);
       });
 
       highlighter.events.select.onClear.add(() => {
         console.log('🔄 Selection cleared');
         setSelectedItems([]);
+        setShowPropertyPanel(false);
       });
 
       highlighterRef.current = highlighter;
@@ -467,7 +526,14 @@ export function IFCViewer() {
 
       {hasModel && !isLoading && !isLoadingIFC && !error && (
         <>
-          <div className="viewer-controls">
+          {/* Property Information Panel */}
+          <PropertyInformationPanel 
+            selectedItems={selectedItems}
+            isVisible={showPropertyPanel}
+            onClose={() => setShowPropertyPanel(false)}
+          />
+          
+          <div className={`viewer-controls ${showPropertyPanel ? 'property-panel-visible' : ''}`}>
             <button
               className="control-button"
               onClick={() => {
@@ -485,6 +551,16 @@ export function IFCViewer() {
               title="Load new IFC file"
             >
               <span className="material-symbols-outlined">upload_file</span>
+            </button>
+
+            {/* Property panel toggle */}
+            <div className="highlight-separator"></div>
+            <button
+              className={`control-button ${showPropertyPanel ? 'active' : ''}`}
+              onClick={() => setShowPropertyPanel(!showPropertyPanel)}
+              title="Toggle property panel"
+            >
+              <span className="material-symbols-outlined">info</span>
             </button>
 
             {/* Control to clear selection */}
