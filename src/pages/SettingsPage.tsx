@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar';
 import { useProjects } from '../hooks/useProjects';
 import './SettingsPage.css';
 
-function SettingsPage() {
+export function SettingsPage() {
   const { navigation } = useProjects();
 
   const sidebarComponent = (
@@ -133,5 +133,3 @@ function SettingsPage() {
     </Layout>
   );
 }
-
-export default SettingsPage; 

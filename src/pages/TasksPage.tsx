@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar';
 import { useProjects } from '../hooks/useProjects';
 import './TasksPage.css';
 
-function TasksPage() {
+export function TasksPage() {
   const { navigation } = useProjects();
 
   const sidebarComponent = (
@@ -109,5 +109,3 @@ function TasksPage() {
     </Layout>
   );
 }
-
-export default TasksPage; 

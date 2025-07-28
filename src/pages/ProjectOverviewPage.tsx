@@ -2,7 +2,6 @@ import Layout from '../components/Layout';
 import Sidebar from '../components/Sidebar';
 import ProjectInfoCard from '../components/ProjectInfoCard';
 import TodoCard from '../components/TodoCard';
-import ViewerArea from '../components/ViewerArea';
 import { useProjects } from '../hooks/useProjects';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -11,8 +10,9 @@ import { TodoStatus } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import { getTodosFromFirebase, updateTodoStatusInFirebase } from '../utils/todoUtils';
 import './ProjectOverviewPage.css';
+import { IFCViewer } from '../components/IFCViewer';
 
-function ProjectOverviewPage() {
+export function ProjectOverviewPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -182,12 +182,10 @@ function ProjectOverviewPage() {
           </div>
           
           <div className="dashboard-page__right-panel">
-            <ViewerArea />
+            <IFCViewer />
           </div>
         </div>
       </div>
     </Layout>
   );
 }
-
-export default ProjectOverviewPage; 

@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar';
 import { useProjects } from '../hooks/useProjects';
 import './TeamPage.css';
 
-function TeamPage() {
+export function TeamPage() {
   const { navigation } = useProjects();
 
   const sidebarComponent = (
@@ -124,5 +124,3 @@ function TeamPage() {
     </Layout>
   );
 }
-
-export default TeamPage; 

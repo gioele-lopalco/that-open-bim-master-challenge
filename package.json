@@ -7,18 +7,25 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "rebuild": "rm -rf dist node_modules package-lock.json && npm install && npm run build && npm run dev"
   },
   "dependencies": {
+    "@lit/react": "^1.0.8",
     "@react-three/drei": "^10.4.4",
     "@react-three/fiber": "^9.2.0",
+    "@thatopen/components": "^3.1.0",
+    "@thatopen/components-front": "^3.1.1",
+    "@thatopen/fragments": "^3.1.2",
+    "@thatopen/ui": "^3.1.1",
     "firebase": "^11.10.0",
     "lil-gui": "^0.20.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3",
     "three": "^0.178.0",
-    "three-orbitcontrols-ts": "^0.1.2"
+    "three-orbitcontrols-ts": "^0.1.2",
+    "web-ifc": "^0.0.69"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",

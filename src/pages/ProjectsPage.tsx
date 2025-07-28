@@ -10,8 +10,9 @@ import { generateProjectAvatar } from '../utils/projectUtils';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import ProjectFormModal from '../components/ProjectFormModal';
 import { deleteProjectFromFirebase, updateProjectInFirebase } from '../utils/projectUtils';
+import { BimLabel } from '../components/BimWrapper';
 
-function ProjectsPage() {
+export function ProjectsPage() {
   const { navigation } = useProjects();
   const [projects, setProjects] = useState<IProject[]>([]);
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
@@ -164,7 +165,7 @@ function ProjectsPage() {
                   </span>
                 </div>
 
-                <h3 className="project-card__title">{project.name}</h3>
+                <BimLabel className="project-card__title">{project.name}</BimLabel>
                 <p className="project-card__description">{project.description}</p>
 
                 <div className="project-card__progress">
@@ -225,5 +226,3 @@ function ProjectsPage() {
     </Layout>
   );
 }
-
-export default ProjectsPage; 

@@ -8,7 +8,7 @@ import type { IProject } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import './ProjectDetailsPage.css';
 
-function ProjectDetailsPage() {
+export function ProjectDetailsPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { navigation } = useProjects();
@@ -196,5 +196,3 @@ function ProjectDetailsPage() {
     </Layout>
   );
 }
-
-export default ProjectDetailsPage; 

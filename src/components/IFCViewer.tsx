@@ -1,0 +1,476 @@
+import { useEffect, useState, useRef } from 'react';
+import * as THREE from 'three';
+import * as OBC from '@thatopen/components';
+import * as OBF from '@thatopen/components-front';
+import './IFCViewer.css';
+
+export function IFCViewer() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isLoadingIFC, setIsLoadingIFC] = useState(false);
+  const [showFileModal, setShowFileModal] = useState(false);
+  const [hasModel, setHasModel] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isInitialized = useRef(false);
+  const componentsRef = useRef<OBC.Components | null>(null);
+  const worldRef = useRef<any>(null);
+  const highlighterRef = useRef<OBF.Highlighter | null>(null);
+
+  const setViewer = async () => {
+    if (isInitialized.current) {
+      console.log('🔄 IFCViewer already initialized, skip');
+      return;
+    }
+    
+    try {
+      console.log('🚀 Initializing IFCViewer...');
+      setIsLoading(true);
+      setError(null);
+      isInitialized.current = true;
+
+      const components = new OBC.Components()
+      const worlds = components.get(OBC.Worlds)
+
+      const world = worlds.create<
+        OBC.SimpleScene,
+        OBC.OrthoPerspectiveCamera,
+        OBF.PostproductionRenderer
+      >()
+
+      const sceneComponent = new OBC.SimpleScene(components)
+      world.scene = sceneComponent
+      world.scene.setup()
+      world.scene.three.background = new THREE.Color(0xf0f0f0)
+
+      if (!containerRef.current) {
+        throw new Error('Viewer container not found');
+      }
+      const viewerContainer = containerRef.current;
+
+      const rendererComponent = new OBF.PostproductionRenderer(components, viewerContainer)
+      world.renderer = rendererComponent
+
+      const cameraComponent = new OBC.OrthoPerspectiveCamera(components)
+      world.camera = cameraComponent
+
+      components.init()
+
+      // Add lighting
+      const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+      world.scene.three.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(10, 10, 5);
+      world.scene.three.add(directionalLight);
+
+      // Add grid
+      components.get(OBC.Grids).create(world);
+
+      // Store references
+      componentsRef.current = components;
+      worldRef.current = world;
+
+      // Configure IFC Loader
+      console.log('🔧 Configuring IFC Loader...');
+      const ifcLoader = components.get(OBC.IfcLoader);
+      
+      await ifcLoader.setup({
+        autoSetWasm: false,
+        wasm: {
+          path: "https://unpkg.com/web-ifc@0.0.69/",
+          absolute: true,
+        },
+      });
+
+            // Configure Fragments Manager
+      console.log('🔧 Configuring Fragments Manager...');
+      const githubUrl = "https://thatopen.github.io/engine_fragment/resources/worker.mjs";
+      const fetchedUrl = await fetch(githubUrl);
+      const workerBlob = await fetchedUrl.blob();
+      const workerFile = new File([workerBlob], "worker.mjs", {
+        type: "text/javascript",
+      });
+      const workerUrl = URL.createObjectURL(workerFile);
+      
+      const fragments = components.get(OBC.FragmentsManager);
+      fragments.init(workerUrl);
+
+      world.camera.controls.addEventListener("rest", () =>
+        fragments.core.update(true),
+      );
+
+      // Configure event for when a model is loaded
+      fragments.list.onItemSet.add(({ value: model }) => {
+        model.useCamera(world.camera.three);
+        world.scene.three.add(model.object);
+        fragments.core.update(true);
+        console.log('✅ IFC model loaded in scene');
+        setIsLoadingIFC(false);
+        setHasModel(true);
+        setShowFileModal(false);
+        // Update camera position when a model is loaded
+        world.camera.controls.setLookAt(78, 20, -2.2, 26, -4, 25);
+      });
+
+      // Configure camera change event for postproduction
+      world.onCameraChanged.add((camera) => {
+        for (const [, model] of fragments.list) {
+          model.useCamera(camera.three);
+        }
+        fragments.core.update(true);
+      });
+
+      // Configure Highlighter
+      console.log('🔧 Configuring Highlighter...');
+      components.get(OBC.Raycasters).get(world);
+      
+      const highlighter = components.get(OBF.Highlighter);
+      highlighter.setup({
+        world,
+        selectMaterialDefinition: {
+          color: new THREE.Color("#029AE0"), // Project primary color
+          opacity: 0.8,
+          transparent: true,
+          renderedFaces: 0,
+        },
+      });
+
+      // Event listeners for highlighting
+      highlighter.events.select.onHighlight.add(async (modelIdMap) => {
+        console.log('🎯 Element selected:', modelIdMap);
+        
+        const promises = [];
+        for (const [modelId, localIds] of Object.entries(modelIdMap)) {
+          const model = fragments.list.get(modelId);
+          if (!model) continue;
+          promises.push(model.getItemsData([...localIds]));
+        }
+
+        const data = (await Promise.all(promises)).flat();
+        setSelectedItems(data);
+        console.log('📊 Selected elements data:', data);
+      });
+
+      highlighter.events.select.onClear.add(() => {
+        console.log('🔄 Selection cleared');
+        setSelectedItems([]);
+      });
+
+      highlighterRef.current = highlighter;
+      console.log('✅ Highlighter configured');
+
+      console.log('✅ IFC Loader configured');
+
+      // Set initial camera position
+      await world.camera.controls.setLookAt(5, 5, 5, 0, 0, 0);
+      world.camera.updateAspect();
+
+      console.log('✅ IFCViewer initialized successfully');
+      setIsLoading(false); // Viewer initialized, show interface
+
+    } catch (err) {
+      console.error('❌ Error initializing IFCViewer:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setIsLoading(false);
+      isInitialized.current = false; // Reset to allow retry
+    }
+  }
+
+  // Function to load an IFC file from local computer
+  const loadIfc = async (file: File) => {
+    if (!componentsRef.current) {
+      throw new Error('Components not initialized');
+    }
+
+    const ifcLoader = componentsRef.current.get(OBC.IfcLoader);
+    
+    const data = await file.arrayBuffer();
+    const buffer = new Uint8Array(data);
+    
+    await ifcLoader.load(buffer, false, file.name, {
+      processData: {
+        progressCallback: (progress) => {
+          console.log(`Loading IFC: ${Math.round(progress * 100)}%`);
+          setLoadingProgress(Math.round(progress * 100));
+        },
+      },
+    });
+  }
+
+    // Handles file selection
+  const handleFileSelect = async () => {
+    const fileInput = fileInputRef.current;
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      return;
+    }
+
+    const file = fileInput.files[0];
+    
+    // Verify it's an IFC file
+    if (!file.name.toLowerCase().endsWith('.ifc')) {
+      setError('Please select a valid IFC file (.ifc)');
+      return;
+    }
+
+    try {
+      setIsLoadingIFC(true);
+      setLoadingProgress(0);
+      setError(null);
+      
+      // If there's already a loaded model, clean the scene
+      if (hasModel && componentsRef.current && worldRef.current) {
+        const fragments = componentsRef.current.get(OBC.FragmentsManager);
+        // Remove all existing models
+        const models = Array.from(fragments.list.values());
+        models.forEach(model => {
+          worldRef.current.scene.three.remove(model.object);
+        });
+        fragments.list.clear();
+        setHasModel(false);
+      }
+      
+      await loadIfc(file);
+      
+      // Reset file input to allow reloading the same file
+      fileInput.value = '';
+      
+    } catch (err) {
+      console.error('❌ Error loading IFC file:', err);
+      setError(err instanceof Error ? err.message : 'Error loading IFC file');
+      setIsLoadingIFC(false);
+    }
+  }
+
+  // Show file selection modal
+  const openFileModal = () => {
+    setShowFileModal(true);
+    setError(null);
+  }
+
+  // Hide modal
+  const closeFileModal = () => {
+    setShowFileModal(false);
+    setError(null);
+  }
+
+  // Clear current selection
+  const clearSelection = async () => {
+    if (!highlighterRef.current) return;
+    
+    const highlighter = highlighterRef.current;
+    await highlighter.clear('select');
+    
+    console.log('✅ Selection cleared');
+  }
+
+  useEffect(() => {
+    // Wait for container to be available with retry mechanism
+    let retryCount = 0;
+    const maxRetries = 20; // 1 secondo di tentativi
+    
+    const initViewer = () => {
+      if (containerRef.current) {
+        setViewer();
+      } else if (retryCount < maxRetries) {
+        retryCount++;
+        setTimeout(initViewer, 50);
+      } else {
+        // Timeout: show error if container is not available
+        console.error('❌ Timeout: Container not available after 1 second');
+        setError('Container not available');
+        setIsLoading(false);
+      }
+    };
+    
+    initViewer();
+    
+    // Safety timeout cleanup
+    const safetyTimeout = setTimeout(() => {
+      if (isLoading) {
+        console.warn('⚠️ Safety timeout: forcing loading end');
+        setIsLoading(false);
+      }
+    }, 5000); // 5 seconds timeout
+    
+    return () => {
+      clearTimeout(safetyTimeout);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="three-viewer-container"
+    >
+      {error && (
+        <div className="three-viewer-loading loading-overlay">
+          <span className="material-symbols-outlined" style={{ fontSize: '48px', color: 'var(--error)' }}>
+            error
+          </span>
+          <p>Loading error</p>
+          <small>{error}</small>
+          {!isLoading && !isLoadingIFC && (
+            <button 
+              className="retry-button"
+              onClick={() => {
+                setError(null);
+                if (!hasModel) openFileModal();
+              }}
+            >
+              Retry
+            </button>
+          )}
+        </div>
+      )}
+      
+      {isLoading && !error && (
+        <div className="three-viewer-loading loading-overlay">
+          <div className="spinner"></div>
+          <p>Initializing 3D viewer...</p>
+        </div>
+      )}
+
+      {isLoadingIFC && !error && (
+        <div className="three-viewer-loading loading-overlay">
+          <div className="spinner"></div>
+          <p>Loading IFC model...</p>
+          {loadingProgress > 0 && (
+            <div style={{ width: '200px', marginTop: '10px' }}>
+              <div className="progress-bar">
+                <div 
+                  className="progress-bar-fill" 
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+              <p style={{ fontSize: '12px', marginTop: '5px' }}>
+                {loadingProgress}%
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isLoading && !isLoadingIFC && !hasModel && !error && (
+        <div className="three-viewer-loading empty-state">
+          <span className="material-symbols-outlined" style={{ fontSize: '48px', color: 'var(--primary)' }}>
+            upload_file
+          </span>
+          <p>No IFC model loaded</p>
+          <button 
+            className="load-ifc-button"
+            onClick={openFileModal}
+          >
+            Load IFC file
+          </button>
+        </div>
+      )}
+
+      {/* Controlli per modello caricato */}
+      {hasModel && !isLoading && !isLoadingIFC && !error && (
+        <>
+          <div className="viewer-controls">
+            <button 
+              className="control-button"
+              onClick={() => {
+                if (worldRef.current?.camera?.controls) {
+                  worldRef.current.camera.controls.setLookAt(78, 20, -2.2, 26, -4, 25);
+                }
+              }}
+              title="Center view"
+            >
+              <span className="material-symbols-outlined">center_focus_weak</span>
+            </button>
+            <button 
+              className="control-button"
+              onClick={openFileModal}
+              title="Load new IFC file"
+            >
+              <span className="material-symbols-outlined">upload_file</span>
+            </button>
+            
+            {/* Control to clear selection */}
+            <div className="highlight-separator"></div>
+            <button 
+              className="control-button highlight-clear"
+              onClick={clearSelection}
+              title="Clear selection"
+            >
+              <span className="material-symbols-outlined">clear</span>
+            </button>
+          </div>
+          
+          {/* Status indicator */}
+          <div className="viewer-status">
+            <div className="status-indicator">
+              <span className="material-symbols-outlined">check_circle</span>
+              <span>IFC model loaded</span>
+            </div>
+            {selectedItems.length > 0 && (
+              <div className="status-indicator selection-info">
+                <span className="material-symbols-outlined">touch_app</span>
+                <span>{selectedItems.length} element{selectedItems.length > 1 ? 's' : ''} selected</span>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* File selection modal */}
+      {showFileModal && (
+        <div className="file-modal-overlay" onClick={closeFileModal}>
+          <div className="file-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="file-modal-header">
+              <h3>{hasModel ? 'Load new IFC file' : 'Select IFC file'}</h3>
+              <button 
+                className="close-button"
+                onClick={closeFileModal}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="file-modal-content">
+              <p>
+                {hasModel 
+                  ? 'Select a new IFC file to replace the current model.'
+                  : 'Select an IFC file from your computer to view it in the 3D viewer.'
+                }
+              </p>
+              {!hasModel && (
+                <div className="highlight-info">
+                  <h4>🎯 Selection Features</h4>
+                  <p>Once the model is loaded you can:</p>
+                  <ul>
+                    <li><strong>Click</strong>: Select elements (blue color)</li>
+                    <li><strong>Ctrl + Click</strong>: Multiple selection</li>
+                    <li><strong>Clear</strong>: Remove current selection</li>
+                    <li><strong>Empty click</strong>: Auto-deselect</li>
+                  </ul>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".ifc"
+                onChange={handleFileSelect}
+                className="file-input"
+              />
+              <div className="file-modal-actions">
+                <button 
+                  className="cancel-button"
+                  onClick={closeFileModal}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Il contenuto 3D verrà renderizzato qui quando non c'è loading né errori */}
+    </div>
+  )
+}
