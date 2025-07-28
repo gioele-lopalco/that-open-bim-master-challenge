@@ -491,6 +491,25 @@
   border-color: #666;
 }
 
+/* Fragment control buttons */
+.control-button.fragment-visibility:hover {
+  background: #2196F3;
+  color: white;
+  border-color: #2196F3;
+}
+
+.control-button.fragment-isolate:hover {
+  background: #FF9800;
+  color: white;
+  border-color: #FF9800;
+}
+
+.control-button.fragment-show-all:hover {
+  background: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
 /* Selection indicator */
 .status-indicator.selection-info {
   background: rgba(2, 154, 224, 0.1);

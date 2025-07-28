@@ -12,6 +12,7 @@ export function IFCViewer() {
   const [showFileModal, setShowFileModal] = useState(false);
   const [hasModel, setHasModel] = useState(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [isolatedItems, setIsolatedItems] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isInitialized = useRef(false);
@@ -24,7 +25,7 @@ export function IFCViewer() {
       console.log('🔄 IFCViewer already initialized, skip');
       return;
     }
-    
+
     try {
       console.log('🚀 Initializing IFCViewer...');
       setIsLoading(true);
@@ -76,7 +77,7 @@ export function IFCViewer() {
       // Configure IFC Loader
       console.log('🔧 Configuring IFC Loader...');
       const ifcLoader = components.get(OBC.IfcLoader);
-      
+
       await ifcLoader.setup({
         autoSetWasm: false,
         wasm: {
@@ -85,7 +86,7 @@ export function IFCViewer() {
         },
       });
 
-            // Configure Fragments Manager
+      // Configure Fragments Manager
       console.log('🔧 Configuring Fragments Manager...');
       const githubUrl = "https://thatopen.github.io/engine_fragment/resources/worker.mjs";
       const fetchedUrl = await fetch(githubUrl);
@@ -94,7 +95,7 @@ export function IFCViewer() {
         type: "text/javascript",
       });
       const workerUrl = URL.createObjectURL(workerFile);
-      
+
       const fragments = components.get(OBC.FragmentsManager);
       fragments.init(workerUrl);
 
@@ -126,7 +127,7 @@ export function IFCViewer() {
       // Configure Highlighter
       console.log('🔧 Configuring Highlighter...');
       components.get(OBC.Raycasters).get(world);
-      
+
       const highlighter = components.get(OBF.Highlighter);
       highlighter.setup({
         world,
@@ -141,7 +142,7 @@ export function IFCViewer() {
       // Event listeners for highlighting
       highlighter.events.select.onHighlight.add(async (modelIdMap) => {
         console.log('🎯 Element selected:', modelIdMap);
-        
+
         const promises = [];
         for (const [modelId, localIds] of Object.entries(modelIdMap)) {
           const model = fragments.list.get(modelId);
@@ -186,13 +187,13 @@ export function IFCViewer() {
     }
 
     const ifcLoader = componentsRef.current.get(OBC.IfcLoader);
-    
+
     const data = await file.arrayBuffer();
     const buffer = new Uint8Array(data);
-    
+
     await ifcLoader.load(buffer, false, file.name, {
       processData: {
-        progressCallback: (progress) => {
+        progressCallback: (progress: number) => {
           console.log(`Loading IFC: ${Math.round(progress * 100)}%`);
           setLoadingProgress(Math.round(progress * 100));
         },
@@ -200,7 +201,7 @@ export function IFCViewer() {
     });
   }
 
-    // Handles file selection
+  // Handles file selection
   const handleFileSelect = async () => {
     const fileInput = fileInputRef.current;
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -208,7 +209,7 @@ export function IFCViewer() {
     }
 
     const file = fileInput.files[0];
-    
+
     // Verify it's an IFC file
     if (!file.name.toLowerCase().endsWith('.ifc')) {
       setError('Please select a valid IFC file (.ifc)');
@@ -219,24 +220,24 @@ export function IFCViewer() {
       setIsLoadingIFC(true);
       setLoadingProgress(0);
       setError(null);
-      
+
       // If there's already a loaded model, clean the scene
       if (hasModel && componentsRef.current && worldRef.current) {
         const fragments = componentsRef.current.get(OBC.FragmentsManager);
         // Remove all existing models
         const models = Array.from(fragments.list.values());
-        models.forEach(model => {
+        models.forEach((model: any) => {
           worldRef.current.scene.three.remove(model.object);
         });
         fragments.list.clear();
         setHasModel(false);
       }
-      
+
       await loadIfc(file);
-      
+
       // Reset file input to allow reloading the same file
       fileInput.value = '';
-      
+
     } catch (err) {
       console.error('❌ Error loading IFC file:', err);
       setError(err instanceof Error ? err.message : 'Error loading IFC file');
@@ -259,18 +260,114 @@ export function IFCViewer() {
   // Clear current selection
   const clearSelection = async () => {
     if (!highlighterRef.current) return;
-    
+
     const highlighter = highlighterRef.current;
     await highlighter.clear('select');
-    
+
     console.log('✅ Selection cleared');
+  }
+
+  const toggleVisibility = async () => {
+    if (!highlighterRef.current || !componentsRef.current) return;
+
+    const highlighter = highlighterRef.current;
+    const fragments = componentsRef.current.get(OBC.FragmentsManager);
+    const selection = highlighter.selection.select;
+
+    if (Object.keys(selection).length === 0) return;
+
+    // Process each fragment model
+    for (const fragmentID in selection) {
+      const model = fragments.list.get(fragmentID);
+      if (!model) continue;
+
+      const expressIDs = Array.from(selection[fragmentID]);
+
+      // Toggle visibility using the model's toggleVisible method
+      await model.toggleVisible(expressIDs);
+    }
+
+    // Update fragments to apply changes
+    await fragments.core.update(true);
+
+    console.log('🔄 Toggled visibility');
+  }
+
+  // Isolate selected elements (hide everything else)
+  const toggleIsolation = async () => {
+    if (!highlighterRef.current || !componentsRef.current) return;
+
+    const highlighter = highlighterRef.current;
+    const fragments = componentsRef.current.get(OBC.FragmentsManager);
+    const selection = highlighter.selection.select;
+
+    if (Object.keys(selection).length === 0) return;
+
+    // Check if we are currently in isolation mode
+    const isCurrentlyIsolated = isolatedItems.size > 0;
+
+    if (isCurrentlyIsolated) {
+      // Remove isolation - show all elements
+      for (const [, model] of fragments.list) {
+        const allItems = await model.getLocalIds();
+        await model.setVisible(allItems, true);
+      }
+      setIsolatedItems(new Set());
+      console.log('🔓 Isolation removed');
+    } else {
+      // Apply isolation - hide everything except selected
+      const newIsolatedItems = new Set<string>();
+
+      // First, hide everything
+      for (const [, model] of fragments.list) {
+        const allItems = await model.getLocalIds();
+        await model.setVisible(allItems, false);
+      }
+
+      // Then show only selected items
+      for (const fragmentID in selection) {
+        const model = fragments.list.get(fragmentID);
+        if (!model) continue;
+
+        const expressIDs = Array.from(selection[fragmentID]);
+        await model.setVisible(expressIDs, true);
+        newIsolatedItems.add(fragmentID);
+      }
+
+      setIsolatedItems(newIsolatedItems);
+      console.log('🔒 Elements isolated');
+    }
+
+    // Update fragments to apply changes
+    await fragments.core.update(true);
+  }
+
+  // Show all elements (reset visibility and isolation)
+  const showAll = async () => {
+    if (!componentsRef.current) return;
+
+    const fragments = componentsRef.current.get(OBC.FragmentsManager);
+
+    // Clear all hidden and isolated items from state
+    setIsolatedItems(new Set());
+
+    // Show all elements in all models
+    for (const [, model] of fragments.list) {
+      const allItems = await model.getLocalIds();
+      await model.setVisible(allItems, true);
+    }
+
+    // Update fragments to apply changes
+    await fragments.core.update(true);
+
+    console.log('👁️ All elements shown');
   }
 
   useEffect(() => {
     // Wait for container to be available with retry mechanism
     let retryCount = 0;
     const maxRetries = 20; // 1 secondo di tentativi
-    
+
     const initViewer = () => {
       if (containerRef.current) {
         setViewer();
@@ -284,9 +381,9 @@ export function IFCViewer() {
         setIsLoading(false);
       }
     };
-    
+
     initViewer();
-    
+
     // Safety timeout cleanup
     const safetyTimeout = setTimeout(() => {
       if (isLoading) {
@@ -294,7 +391,7 @@ export function IFCViewer() {
         setIsLoading(false);
       }
     }, 5000); // 5 seconds timeout
-    
+
     return () => {
       clearTimeout(safetyTimeout);
     };
@@ -313,7 +410,7 @@ export function IFCViewer() {
           <p>Loading error</p>
           <small>{error}</small>
           {!isLoading && !isLoadingIFC && (
-            <button 
+            <button
               className="retry-button"
               onClick={() => {
                 setError(null);
@@ -325,7 +422,7 @@ export function IFCViewer() {
           )}
         </div>
       )}
-      
+
       {isLoading && !error && (
         <div className="three-viewer-loading loading-overlay">
           <div className="spinner"></div>
@@ -340,8 +437,8 @@ export function IFCViewer() {
           {loadingProgress > 0 && (
             <div style={{ width: '200px', marginTop: '10px' }}>
               <div className="progress-bar">
-                <div 
-                  className="progress-bar-fill" 
+                <div
+                  className="progress-bar-fill"
                   style={{ width: `${loadingProgress}%` }}
                 />
               </div>
@@ -359,7 +456,7 @@ export function IFCViewer() {
             upload_file
           </span>
           <p>No IFC model loaded</p>
-          <button 
+          <button
             className="load-ifc-button"
             onClick={openFileModal}
           >
@@ -368,11 +465,10 @@ export function IFCViewer() {
         </div>
       )}
 
-      {/* Controlli per modello caricato */}
       {hasModel && !isLoading && !isLoadingIFC && !error && (
         <>
           <div className="viewer-controls">
-            <button 
+            <button
               className="control-button"
               onClick={() => {
                 if (worldRef.current?.camera?.controls) {
@@ -383,25 +479,53 @@ export function IFCViewer() {
             >
               <span className="material-symbols-outlined">center_focus_weak</span>
             </button>
-            <button 
+            <button
               className="control-button"
               onClick={openFileModal}
               title="Load new IFC file"
             >
               <span className="material-symbols-outlined">upload_file</span>
             </button>
-            
+
             {/* Control to clear selection */}
             <div className="highlight-separator"></div>
-            <button 
+            <button
               className="control-button highlight-clear"
               onClick={clearSelection}
               title="Clear selection"
             >
               <span className="material-symbols-outlined">clear</span>
             </button>
+
+            {/* Fragment controls - only show when items are selected */}
+            {selectedItems.length > 0 && (
+              <>
+                <div className="highlight-separator"></div>
+                <button
+                  className="control-button fragment-visibility"
+                  onClick={toggleVisibility}
+                  title="Toggle visibility"
+                >
+                  <span className="material-symbols-outlined">visibility</span>
+                </button>
+                <button
+                  className="control-button fragment-isolate"
+                  onClick={toggleIsolation}
+                  title="Isolate selection"
+                >
+                  <span className="material-symbols-outlined">filter_center_focus</span>
+                </button>
+                <button
+                  className="control-button fragment-show-all"
+                  onClick={showAll}
+                  title="Show all"
+                >
+                  <span className="material-symbols-outlined">visibility_off</span>
+                </button>
+              </>
+            )}
           </div>
-          
+
           {/* Status indicator */}
           <div className="viewer-status">
             <div className="status-indicator">
@@ -424,7 +548,7 @@ export function IFCViewer() {
           <div className="file-modal" onClick={(e) => e.stopPropagation()}>
             <div className="file-modal-header">
               <h3>{hasModel ? 'Load new IFC file' : 'Select IFC file'}</h3>
-              <button 
+              <button
                 className="close-button"
                 onClick={closeFileModal}
               >
@@ -433,7 +557,7 @@ export function IFCViewer() {
             </div>
             <div className="file-modal-content">
               <p>
-                {hasModel 
+                {hasModel
                   ? 'Select a new IFC file to replace the current model.'
                   : 'Select an IFC file from your computer to view it in the 3D viewer.'
                 }
@@ -458,7 +582,7 @@ export function IFCViewer() {
                 className="file-input"
               />
               <div className="file-modal-actions">
-                <button 
+                <button
                   className="cancel-button"
                   onClick={closeFileModal}
                 >
@@ -469,7 +593,7 @@ export function IFCViewer() {
           </div>
         </div>
       )}
-      
+
       {/* Il contenuto 3D verrà renderizzato qui quando non c'è loading né errori */}
     </div>
   )
