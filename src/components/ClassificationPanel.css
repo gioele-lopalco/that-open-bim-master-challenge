@@ -1,0 +1,326 @@
+.classification-panel {
+  background: var(--background, #202124);
+  border: 1px solid var(--border-color, #3c4043);
+  border-radius: var(--border-radius, 8px);
+  width: 320px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 998;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.classification-panel.visible {
+  transform: translateX(0);
+}
+
+.classification-panel-header {
+  background: var(--primary, #029AE0);
+  color: white;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.classification-panel-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.classification-panel-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.classification-panel-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.classification-panel-close .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.classification-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.classification-controls {
+  padding: 16px 20px;
+  background: rgba(2, 154, 224, 0.05);
+  border-bottom: 1px solid var(--border-color, #3c4043);
+  display: flex;
+  gap: 8px;
+}
+
+.control-button-small {
+  background: var(--primary-100);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.control-button-small:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.control-button-small .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.export-button {
+  background: var(--success, #28a745) !important;
+  border-color: var(--success, #28a745) !important;
+  color: white !important;
+}
+
+.export-button:hover {
+  background: var(--success-dark, #218838) !important;
+  color: white !important;
+}
+
+.export-button:nth-child(3) {
+  background: var(--primary, #029AE0) !important;
+  border-color: var(--primary, #029AE0) !important;
+}
+
+.export-button:nth-child(3):hover {
+  background: var(--primary-dark, #0277bd) !important;
+}
+
+.classification-section {
+  border-bottom: 1px solid var(--border-color, #3c4043);
+}
+
+.section-header {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-primary, #ffffff);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.section-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.expand-icon {
+  font-size: 12px;
+  color: var(--primary, #029AE0);
+  font-weight: bold;
+  transition: transform 0.2s ease;
+  min-width: 12px;
+}
+
+.section-content {
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0;
+}
+
+.loading-state,
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary, #9aa0a6);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary, #029AE0);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.category-list {
+  padding: 0;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.category-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.category-item.highlighted {
+  background: rgba(2, 154, 224, 0.1);
+  border-left: 3px solid var(--primary, #029AE0);
+  padding-left: 13px;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.category-color-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.category-name {
+  color: var(--text-primary, #ffffff);
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.category-count {
+  color: var(--text-secondary, #9aa0a6);
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.category-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.category-item:hover .category-actions {
+  opacity: 1;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #9aa0a6);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #ffffff);
+}
+
+.action-button.inactive {
+  color: var(--error, #ff6b6b);
+}
+
+.action-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.export-action {
+  color: var(--success, #28a745) !important;
+}
+
+.export-action:hover {
+  background: rgba(40, 167, 69, 0.1) !important;
+  color: var(--success-dark, #218838) !important;
+}
+
+.export-action:nth-child(3) {
+  color: var(--primary, #029AE0) !important;
+}
+
+.export-action:nth-child(3):hover {
+  background: rgba(2, 154, 224, 0.1) !important;
+  color: var(--primary-dark, #0277bd) !important;
+}
+
+.classification-panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.classification-panel-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.classification-panel-content::-webkit-scrollbar-thumb {
+  background: var(--primary, #029AE0);
+  border-radius: 3px;
+}
+
+.classification-panel-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(2, 154, 224, 0.8);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .classification-panel {
+    width: 100%;
+    height: 50vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    top: auto;
+    transform: translateY(100%);
+    border-radius: 12px 12px 0 0;
+  }
+  
+  .classification-panel.visible {
+    transform: translateY(0);
+  }
+} 

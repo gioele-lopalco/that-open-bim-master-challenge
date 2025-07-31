@@ -345,6 +345,13 @@
   right: 340px;
 }
 
+/* Adjust controls when both panels are visible */
+.viewer-controls.both-panels-visible {
+  right: 340px;
+  left: 340px;
+  margin: 0 auto;
+}
+
 .control-button {
   background: var(--primary-100);
   border: none;
