@@ -19,6 +19,7 @@ export function IFCViewer() {
   const [showClassificationPanel, setShowClassificationPanel] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const fragmentInputRef = useRef<HTMLInputElement>(null);
   const isInitialized = useRef(false);
   const componentsRef = useRef<OBC.Components | null>(null);
   const worldRef = useRef<any>(null);
@@ -244,6 +245,51 @@ export function IFCViewer() {
     });
   }
 
+  const loadFragment = async (file: File) => {
+    if (!componentsRef.current) {
+      throw new Error('Components not initialized');
+    }
+
+    try {
+      console.log('🔧 Caricamento fragment:', file.name);
+      
+      const reader = new FileReader();
+      
+      return new Promise<void>((resolve, reject) => {
+        reader.addEventListener('load', async () => {
+          try {
+            const binary = reader.result;
+            if (!(binary instanceof ArrayBuffer)) {
+              reject(new Error('Errore nella lettura del file'));
+              return;
+            }
+            
+            const fragmentBinary = new Uint8Array(binary);
+            const fragmentsManager = componentsRef.current!.get(OBC.FragmentsManager);
+            
+            await fragmentsManager.core.load(fragmentBinary, { modelId: file.name });
+            
+            console.log('✅ Fragment caricato con successo:', file.name);
+            setHasModel(true);
+            resolve();
+          } catch (error) {
+            console.error('❌ Errore nel caricamento del fragment:', error);
+            reject(error);
+          }
+        });
+        
+        reader.addEventListener('error', () => {
+          reject(new Error('Errore nella lettura del file'));
+        });
+        
+        reader.readAsArrayBuffer(file);
+      });
+    } catch (error) {
+      console.error('❌ Errore nel caricamento del fragment:', error);
+      throw error;
+    }
+  }
+
   const handleFileSelect = async () => {
     const fileInput = fileInputRef.current;
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -280,6 +326,52 @@ export function IFCViewer() {
       console.error('❌ Error loading IFC file:', err);
       setError(err instanceof Error ? err.message : 'Error loading IFC file');
       setIsLoadingIFC(false);
+    }
+  }
+
+  const handleFragmentSelect = async () => {
+    const fileInput = fragmentInputRef.current;
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (!file.name.toLowerCase().endsWith('.frag')) {
+      setError('Seleziona un file fragment valido (.frag)');
+      return;
+    }
+
+    try {
+      setIsLoadingIFC(true);
+      setError(null);
+
+      // Rimuovi modelli esistenti se presenti
+      if (hasModel && componentsRef.current && worldRef.current) {
+        const fragments = componentsRef.current.get(OBC.FragmentsManager);
+        const models = Array.from(fragments.list.values());
+        models.forEach((model: any) => {
+          worldRef.current.scene.three.remove(model.object);
+        });
+        fragments.list.clear();
+        setHasModel(false);
+      }
+
+      await loadFragment(file);
+
+      fileInput.value = '';
+      setIsLoadingIFC(false);
+
+    } catch (err) {
+      console.error('❌ Errore nel caricamento del file fragment:', err);
+      setError(err instanceof Error ? err.message : 'Errore nel caricamento del file fragment');
+      setIsLoadingIFC(false);
+    }
+  }
+
+  const openFragmentImport = () => {
+    if (fragmentInputRef.current) {
+      fragmentInputRef.current.click();
     }
   }
 
@@ -480,6 +572,13 @@ export function IFCViewer() {
           >
             Load IFC file
           </button>
+          <button
+            className="load-ifc-button"
+            onClick={openFragmentImport}
+            style={{ marginTop: '10px' }}
+          >
+            Carica Fragment
+          </button>
         </div>
       )}
 
@@ -515,6 +614,13 @@ export function IFCViewer() {
               title="Load new IFC file"
             >
               <span className="material-symbols-outlined">upload_file</span>
+            </button>
+            <button
+              className="control-button"
+              onClick={openFragmentImport}
+              title="Carica file fragment (.frag)"
+            >
+              <span className="material-symbols-outlined">file_present</span>
             </button>
 
             <div className="highlight-separator"></div>
@@ -636,6 +742,15 @@ export function IFCViewer() {
           </div>
         </div>
       )}
+
+      {/* Hidden input for fragment files */}
+      <input
+        ref={fragmentInputRef}
+        type="file"
+        accept=".frag"
+        onChange={handleFragmentSelect}
+        style={{ display: 'none' }}
+      />
     </div>
   )
 }
