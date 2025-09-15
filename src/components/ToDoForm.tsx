@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { TodoItem } from '../classes/Project';
 import { TodoStatus, TodoPriority } from '../classes/Project';
+import { useModelSelection } from '../contexts/ModelSelectionContext';
 import './ToDoForm.css';
 
 interface ToDoFormProps {
@@ -18,6 +19,7 @@ const ToDoForm: React.FC<ToDoFormProps> = ({
   initialData, 
   projectId 
 }) => {
+  const { selectedElements, clearSelection } = useModelSelection();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -81,10 +83,18 @@ const ToDoForm: React.FC<ToDoFormProps> = ({
         priority: formData.priority,
         assignedTo: formData.assignedTo.trim() || undefined,
         projectId,
-        icon: formData.icon
+        icon: formData.icon,
+        // Includi gli elementi selezionati solo se non stiamo modificando un todo esistente
+        linkedElements: !initialData && selectedElements.length > 0 ? selectedElements : initialData?.linkedElements
       };
 
       await onSubmit(todoData);
+      
+      // Pulisci la selezione solo se abbiamo creato un nuovo todo
+      if (!initialData && selectedElements.length > 0) {
+        clearSelection();
+      }
+      
       onClose();
     } catch (error) {
       console.error('Error submitting todo:', error);
@@ -147,6 +157,40 @@ const ToDoForm: React.FC<ToDoFormProps> = ({
               disabled={isSubmitting}
             />
           </div>
+
+          {/* Mostra gli elementi collegati */}
+          {(selectedElements.length > 0 && !initialData) || (initialData?.linkedElements && initialData.linkedElements.length > 0) ? (
+            <div className="form-group">
+              <label>Elementi BIM collegati</label>
+              <div className="linked-elements">
+                {(selectedElements.length > 0 && !initialData ? selectedElements : initialData?.linkedElements || []).map((element, index) => (
+                  <div key={`${element.modelId}-${element.elementId}-${index}`} className="linked-element">
+                    <span className="material-symbols-outlined">construction</span>
+                    <div className="element-info">
+                      <div className="element-name">{element.elementName}</div>
+                      <div className="element-details">{element.elementType} - ID: {element.elementId}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {selectedElements.length > 0 && !initialData && (
+                <small className="help-text">
+                  <span className="material-symbols-outlined">info</span>
+                  Questi elementi sono stati selezionati nel viewer BIM e verranno collegati a questo task.
+                </small>
+              )}
+            </div>
+          ) : (
+            !initialData && (
+              <div className="form-group">
+                <label>Elementi BIM collegati</label>
+                <div className="no-selection">
+                  <span className="material-symbols-outlined">info</span>
+                  <span>Nessun elemento selezionato nel viewer. Seleziona elementi nel modello BIM per collegarli a questo task.</span>
+                </div>
+              </div>
+            )
+          )}
 
           <div className="form-row">
             <div className="form-group">

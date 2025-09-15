@@ -233,4 +233,37 @@
     min-width: auto;
     flex: 1;
   }
+}
+
+/* Stili per todo collegati al modello BIM */
+.todo-item--linked {
+  position: relative;
+}
+
+.todo-item--linked:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.todo-item__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  justify-content: space-between;
+}
+
+.todo-linked-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.todo-linked-indicator .material-symbols-outlined {
+  font-size: 14px;
 } 

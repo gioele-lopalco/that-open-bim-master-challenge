@@ -229,4 +229,88 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* Stili per elementi BIM collegati */
+.linked-elements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--spacing-sm, 8px);
+  background: var(--bg-secondary, #2a2d31);
+  border: 1px solid var(--border-color, #3c4043);
+  border-radius: var(--border-radius, 6px);
+}
+
+.linked-element {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px);
+  background: var(--bg-tertiary, #36393f);
+  border-radius: var(--border-radius, 6px);
+  border: 1px solid var(--border-color, #3c4043);
+}
+
+.linked-element .material-symbols-outlined {
+  color: var(--primary-color, #029AE0);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.element-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.element-name {
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  font-size: var(--font-size-sm, 14px);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.element-details {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--text-secondary, #b9bbbe);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-selection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-md, 12px);
+  background: var(--bg-secondary, #2a2d31);
+  border: 1px solid var(--border-color, #3c4043);
+  border-radius: var(--border-radius, 6px);
+  color: var(--text-secondary, #b9bbbe);
+  font-size: var(--font-size-sm, 14px);
+}
+
+.no-selection .material-symbols-outlined {
+  color: var(--text-secondary, #b9bbbe);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.help-text {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  color: var(--text-secondary, #b9bbbe);
+  font-size: var(--font-size-xs, 12px);
+  margin-top: var(--spacing-xs, 4px);
+}
+
+.help-text .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--primary-color, #029AE0);
 } 

@@ -45,7 +45,8 @@ export const getTodosFromFirebase = async (projectId: string): Promise<TodoItem[
         projectId,
         updatedAt: data.updatedAt ? formatFirebaseDate(data.updatedAt) : undefined,
         assignedTo: data.assignedTo || undefined,
-        icon: data.icon || 'task'
+        icon: data.icon || 'task',
+        linkedElements: data.linkedElements || undefined
       };
       
       todosList.push(todo);

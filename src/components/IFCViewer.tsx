@@ -4,9 +4,12 @@ import * as OBC from '@thatopen/components';
 import * as OBF from '@thatopen/components-front';
 import { PropertyInformationPanel } from './PropertyInformationPanel';
 import { ClassificationPanel } from './ClassificationPanel';
+import { useModelSelection } from '../contexts/ModelSelectionContext';
+import type { ModelElement } from '../classes/Project';
 import './IFCViewer.css';
 
 export function IFCViewer() {
+  const { setSelectedElements, setHighlightCallback } = useModelSelection();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -71,6 +74,62 @@ export function IFCViewer() {
       console.log('✅ Processed item:', processedItem);
       return processedItem;
     });
+  };
+
+  const convertToModelElements = (modelIdMap: any, processedData: any[]): ModelElement[] => {
+    const elements: ModelElement[] = [];
+    
+    for (const [modelId, localIds] of Object.entries(modelIdMap)) {
+      const idsArray = Array.isArray(localIds) ? localIds : Array.from(localIds as Set<string>);
+      
+      idsArray.forEach((elementId: string) => {
+        // Trova i dati dell'elemento processato
+        const elementData = processedData.find(item => 
+          item.id === elementId || String(item.id) === String(elementId)
+        );
+        
+        const element: ModelElement = {
+          modelId,
+          elementId: String(elementId),
+          elementName: elementData?.name || `Element ${elementId}`,
+          elementType: elementData?.type || 'Unknown'
+        };
+        
+        elements.push(element);
+      });
+    }
+    
+    return elements;
+  };
+
+  const highlightModelElements = async (elements: ModelElement[]) => {
+    if (!highlighterRef.current || !componentsRef.current) return;
+    
+    try {
+      const highlighter = highlighterRef.current;
+      
+      await highlighter.clear('select');
+      
+      // Raggruppa gli elementi per modelId
+      const modelIdMap: { [modelId: string]: Set<string> } = {};
+      elements.forEach(element => {
+        if (!modelIdMap[element.modelId]) {
+          modelIdMap[element.modelId] = new Set();
+        }
+        modelIdMap[element.modelId].add(element.elementId);
+      });
+      
+      // Evidenzia gli elementi
+      for (const [modelId, elementIds] of Object.entries(modelIdMap)) {
+        if (highlighter.selection.select instanceof Map) {
+          highlighter.selection.select.set(modelId, elementIds);
+        }
+      }
+      
+      console.log('🔗 Highlighted linked elements:', elements);
+    } catch (error) {
+      console.error('❌ Error highlighting linked elements:', error);
+    }
   };
 
   const setViewer = async () => {
@@ -197,13 +256,20 @@ export function IFCViewer() {
         const processedData = processIFCData(rawData);
         setSelectedItems(processedData);
         setShowPropertyPanel(true);
+        
+        // Aggiorna il context con gli elementi selezionati
+        const modelElements = convertToModelElements(modelIdMap, processedData);
+        setSelectedElements(modelElements);
+        
         console.log('📊 Selected elements data:', processedData);
+        console.log('🔗 Model elements for todo linking:', modelElements);
       });
 
       highlighter.events.select.onClear.add(() => {
         console.log('🔄 Selection cleared');
         setSelectedItems([]);
         setShowPropertyPanel(false);
+        setSelectedElements([]);
       });
 
       highlighterRef.current = highlighter;
@@ -506,6 +572,13 @@ export function IFCViewer() {
       clearTimeout(safetyTimeout);
     };
   }, []);
+
+  // Registra la funzione di evidenziazione quando il viewer è pronto
+  useEffect(() => {
+    if (!isLoading && highlighterRef.current && componentsRef.current) {
+      setHighlightCallback(highlightModelElements);
+    }
+  }, [isLoading]);
 
   return (
     <div

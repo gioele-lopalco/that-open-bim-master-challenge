@@ -26,6 +26,15 @@ export interface TodoItem {
   assignedTo?: string;
   projectId: string;
   icon?: string;
+  // Aggiunti per il collegamento al modello BIM
+  linkedElements?: ModelElement[];
+}
+
+export interface ModelElement {
+  modelId: string;
+  elementId: string;
+  elementName?: string;
+  elementType?: string;
 }
 
 export interface NavigationItem {

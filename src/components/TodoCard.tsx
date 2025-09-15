@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { TodoItem } from '../classes/Project';
 import { TodoStatus, TodoPriority } from '../classes/Project';
+import { useModelSelection } from '../contexts/ModelSelectionContext';
 import './TodoCard.css';
 
 interface TodoCardProps {
@@ -12,12 +13,26 @@ interface TodoCardProps {
 }
 
 const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange, onToggleStatus, onManageTasks }) => {
+  const { highlightElements } = useModelSelection();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
     onSearchChange?.(query);
+  };
+
+  const handleTodoClick = async (todo: TodoItem) => {
+    if (todo.linkedElements && todo.linkedElements.length > 0) {
+      try {
+        await highlightElements(todo.linkedElements);
+        console.log('🔗 Highlighting elements for todo:', todo.title, todo.linkedElements);
+      } catch (error) {
+        console.error('❌ Error highlighting elements:', error);
+      }
+    } else {
+      console.log('ℹ️ Todo has no linked elements:', todo.title);
+    }
   };
 
   const filteredTodos = todos.filter(todo =>
@@ -66,7 +81,13 @@ const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange, o
         {filteredTodos.length > 0 ? (
           <div className="todo-list">
             {filteredTodos.map((todo) => (
-              <div key={todo.id} className={`todo-item todo-item--${todo.status.toLowerCase().replace(' ', '-')}`}>
+              <div 
+                key={todo.id} 
+                className={`todo-item todo-item--${todo.status.toLowerCase().replace(' ', '-')} ${todo.linkedElements && todo.linkedElements.length > 0 ? 'todo-item--linked' : ''}`}
+                onClick={() => handleTodoClick(todo)}
+                style={{ cursor: todo.linkedElements && todo.linkedElements.length > 0 ? 'pointer' : 'default' }}
+                title={todo.linkedElements && todo.linkedElements.length > 0 ? `Clicca per evidenziare ${todo.linkedElements.length} elemento/i collegato/i` : undefined}
+              >
                 <div className="todo-item__header">
                   <button 
                     className="todo-status-btn-simple"
@@ -91,7 +112,17 @@ const TodoCard: React.FC<TodoCardProps> = ({ todos, onAddTodo, onSearchChange, o
                       {todo.icon || 'task'}
                     </span>
                     <div className="todo-item__info">
-                      <p className="todo-item__title">{todo.title}</p>
+                      <div className="todo-item__title-row">
+                        <p className="todo-item__title">{todo.title}</p>
+                        {todo.linkedElements && todo.linkedElements.length > 0 && (
+                          <span 
+                            className="todo-linked-indicator"
+                            title={`${todo.linkedElements.length} elemento/i BIM collegato/i`}
+                          >
+                            <span className="material-symbols-outlined">link</span>
+                          </span>
+                        )}
+                      </div>
                       {todo.description && (
                         <p className="todo-item__description">{todo.description}</p>
                       )}
